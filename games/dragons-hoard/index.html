@@ -2,59 +2,72 @@
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Dragon’s Hoard</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
 <style>
-:root{color-scheme:light dark;--bg:#ece8f6;--fg:#1d1a30;--mu:#5d5878;--pn:#fff;--ed:#b9b1d6;--ac:#f2b705;--on:#1d1a30}
-@media (prefers-color-scheme:dark){:root{--bg:#16142a;--fg:#ece8ff;--mu:#a49fc4;--pn:#232042;--ed:#3f3a68;--ac:#ffcc33;--on:#1d1a30}}
+:root{color-scheme:light dark;--bg:#eef2f2;--fg:#13201f;--mu:#5b6e6c;--pn:#fff;--ed:#dbe5e4;--ac:#f59e0b;--on:#1a1200}
+@media (prefers-color-scheme:dark){:root{--bg:#0e1819;--fg:#e8f1f0;--mu:#8fa6a3;--pn:#152426;--ed:#243a3c;--ac:#fbbf24;--on:#1a1200}}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 .wrap{max-width:1040px;margin:0 auto;padding:16px 14px 56px}
-header{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:14px}
-h1{font:700 clamp(24px,5vw,38px)/1.1 Silkscreen,"Courier New",monospace;margin:0}
-h2{font-size:18px;margin:0 0 8px}.right h2{margin-top:22px}
-.back,.mu{color:var(--mu)}
+header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:clamp(24px,5vw,32px);letter-spacing:-.02em;margin:0}
+h2{font-size:17px;margin:0 0 6px}.right h2{margin-top:24px}
+.mu{color:var(--mu)}
+.back{background:var(--ac);color:var(--on);font-weight:700;text-decoration:none;padding:9px 18px;border-radius:999px;box-shadow:0 2px 8px rgba(245,158,11,.35)}
+.back:hover{filter:brightness(1.08)}
 .cols{display:grid;gap:22px;grid-template-columns:1fr}
 @media(min-width:780px){.cols{grid-template-columns:minmax(280px,360px) 1fr}.left{position:sticky;top:12px;align-self:start}}
-.gold b{display:block;font:700 clamp(30px,8vw,44px)/1.1 Silkscreen,"Courier New",monospace}
+.gold b{display:block;font-size:clamp(34px,9vw,48px);letter-spacing:-.03em;font-variant-numeric:tabular-nums}
 .gold span{color:var(--mu)}
-.stage{position:relative;display:flex;justify-content:center;padding:14px 0;min-height:250px}
-#pounce{background:none;border:0;padding:0;cursor:pointer;touch-action:manipulation}
-#pounce canvas{width:min(70vw,230px);height:auto;aspect-ratio:16/18;image-rendering:pixelated;display:block}
-#pounce:active canvas{transform:scale(.94)}
+.stage{position:relative;display:flex;justify-content:center;padding:10px 0;min-height:240px}
+#pounce{background:none;border:0;padding:0;cursor:pointer;width:min(88vw,300px);touch-action:manipulation}
+#pounce svg{transition:transform .08s;display:block}
+#pounce:active svg{transform:scale(.96)}
 #fx{position:absolute;inset:0;pointer-events:none;overflow:hidden}
-.pop{position:absolute;font:700 18px Silkscreen,monospace;color:var(--ac);text-shadow:1px 1px 0 rgba(0,0,0,.55);animation:rise .9s ease-out forwards}
+.pop{position:absolute;font-weight:700;font-size:20px;color:var(--ac);text-shadow:0 1px 3px rgba(0,0,0,.5);animation:rise .9s ease-out forwards}
 @keyframes rise{to{transform:translateY(-70px);opacity:0}}
 @keyframes bob{to{transform:translateY(-6px)}}
-.msg{min-height:3em;color:var(--fg)}
-button{font:inherit;color:var(--fg);background:var(--pn);border:2px solid var(--ed);border-radius:4px;padding:8px 12px;cursor:pointer}
+.msg{min-height:3em}
+button{font:inherit;color:var(--fg);background:var(--pn);border:1px solid var(--ed);border-radius:10px;padding:9px 14px;cursor:pointer}
 button:disabled{opacity:.5;cursor:default}
 :focus-visible{outline:3px solid var(--ac);outline-offset:2px}
-.buy,.adv{background:var(--ac);color:var(--on);font-weight:700;border:0;box-shadow:2px 2px 0 rgba(0,0,0,.4)}
-.buy:disabled{background:var(--ed);color:var(--mu);box-shadow:none;opacity:1}
-.adv{position:absolute;z-index:2;animation:bob .8s ease-in-out infinite alternate}
-.box{background:var(--pn);border:2px solid var(--ed);border-radius:4px;padding:12px;margin-top:14px;box-shadow:4px 4px 0 var(--ed)}
+.buy,.adv{background:var(--ac);color:var(--on);font-weight:700;border:0}
+.buy:disabled{background:var(--ed);color:var(--mu);opacity:1}
+.adv{position:absolute;z-index:2;box-shadow:0 4px 14px rgba(0,0,0,.35);animation:bob .8s ease-in-out infinite alternate}
+.box{background:var(--pn);border:1px solid var(--ed);border-radius:16px;padding:14px;margin-top:14px}
 .box p{margin:0 0 10px;font-size:14px;color:var(--mu)}
 .box button+button{margin-left:6px}
 .modes{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
 .modes button[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
-.gen{display:flex;align-items:center;gap:12px;background:var(--pn);border:2px solid var(--ed);border-radius:4px;box-shadow:4px 4px 0 var(--ed);padding:10px;margin:14px 0}
+.gen{display:flex;align-items:center;gap:12px;background:var(--pn);border:1px solid var(--ed);border-radius:16px;padding:12px;margin:12px 0}
 .gen[hidden]{display:none}
-.gen canvas{flex:none;width:44px;height:44px;image-rendering:pixelated;border-radius:2px}
+.ic{flex:none;width:46px;height:46px;border-radius:12px;background:var(--ed);display:grid;place-items:center;font-size:24px}
 .gi{flex:1;min-width:0}.gi b{display:block}.gi small{color:var(--mu)}
-.up{display:block;width:100%;text-align:left;margin:8px 0}
-.up span{display:block;font-size:14px;color:var(--mu)}
-.up small{color:var(--fg);font-weight:700}
+.up{display:block;width:100%;text-align:left;margin:8px 0;border-radius:14px}
+.up span{display:block;font-size:14px;color:var(--mu)}.up small{font-weight:700}
+.act{display:block;width:100%;text-align:left;margin:8px 0}.act span{display:block;font-size:13px;color:var(--mu)}
+#mg{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:14px;z-index:9}
+#mg[hidden]{display:none}
+.mgc{background:var(--pn);border-radius:20px;padding:20px;width:min(420px,100%)}.mgc p{color:var(--mu)}
+.grid9{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0}
+.hole{aspect-ratio:1;border-radius:16px;background:var(--ed);border:0;font-size:34px}
+.hole.on{background:var(--ac)}.hole.on::after{content:'\1F9B9'}
+.track{position:relative;height:28px;background:var(--ed);border-radius:14px;margin:18px 0;overflow:hidden}
+#zone{position:absolute;top:0;bottom:0;background:rgba(34,197,94,.6)}
+#mark{position:absolute;top:0;bottom:0;width:6px;margin-left:-3px;background:var(--fg);border-radius:3px}
+.mgc .big{font-size:30px;font-weight:700;color:var(--ac);margin:6px 0 14px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style></head><body>
 <div class="wrap">
-<header><a class="back" href="../../">All games</a><h1>Dragon’s Hoard</h1></header>
+<header><a class="back" href="../../">‹ All games</a><h1>Dragon’s Hoard</h1></header>
 <div class="cols">
 <section class="left">
   <div class="gold"><b id="gold">0</b><span id="gps"></span></div>
-  <div class="stage" id="stage"><button id="pounce" aria-label="Pounce on the hoard"><canvas id="dragon" width="16" height="18"></canvas></button><div id="fx"></div></div>
+  <div class="stage" id="stage"><button id="pounce" aria-label="Pounce on the hoard"><div id="hoard"></div></button><div id="fx"></div></div>
   <div class="msg" id="msg" aria-live="polite"></div>
-  <p class="mu">Click the dragon to pounce on your hoard. Spend gold on minions that earn for you, then slumber to gain permanent bonuses.</p>
+  <p class="mu">Click the hoard to grab gold. Spend gold on minions that earn for you, then slumber to gain permanent bonuses.</p>
+  <div class="box"><h2>Lair activities</h2><p>Quick challenges that pay out far more than clicking.</p>
+<button class="act" data-g="thief"><b>Guard the hoard</b><span id="cd-thief"></span></button>
+<button class="act" data-g="strike"><b>Perfect strike</b><span id="cd-strike"></span></button></div>
   <div class="box"><h2>Dragon scales</h2><p id="ptxt"></p><button class="buy" id="slumber"></button></div>
   <div class="box"><h2>Stats and saving</h2><p id="stats"></p><button id="exp">Export save</button><button id="imp">Import save</button><button id="rst">Reset</button><p style="margin:10px 0 0">The game saves automatically in this browser.</p></div>
 </section>
@@ -64,6 +77,7 @@ button:disabled{opacity:.5;cursor:default}
   <h2>Upgrades</h2><div id="ups"></div>
 </section>
 </div></div>
+<div id="mg" hidden><div class="mgc" id="mgc"></div></div>
 <script>
 const $=s=>document.querySelector(s),rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
 const SUF=['','K','M','B','T','Qa','Qi','Sx','Sp','Oc','No','Dc'];
@@ -105,20 +119,20 @@ function qty(i){if(mode!=='max')return+mode;let n=Math.floor(Math.log(S.gold*(R-
 const earn=g=>{S.gold+=g;S.life+=g;S.all+=g};
 const scales=()=>Math.floor(Math.sqrt(S.all/1e6))-S.sc;
 
-/* ---------- pixel art ---------- */
-const DRAGON=["h..............h","hh............hh",".hh..rrrrrr..hh.","..hrrrrrrrrrrh..","..rrrrrrrrrrrr..",".rrryyrrrryyrrr.",".rrrykrrrrkyrrr.",".rrrrrrrrrrrrrr.","..rrrrrrrrrrrr..","..rrrdrrrrdrrr..","..rrrrrrrrrrrr..","...rrwrrrrwrr...","....rrrrrrrr....",".....rrrrrr....."];
-const PAL={r:'#c0392b',h:'#f0e6c8',y:'#ffcc33',k:'#111',d:'#7a1f16',w:'#fff'};
-function drawDragon(L){const x=$('#dragon').getContext('2d');x.clearRect(0,0,16,18);
- DRAGON.forEach((row,y)=>[...row].forEach((c,i)=>{if(PAL[c]){x.fillStyle=PAL[c];x.fillRect(i,y,1,1)}}));
- for(let r=0;r<4;r++){const w=Math.min(16,Math.max(0,L*2-r*3)),s=Math.floor((16-w)/2),y=17-r;for(let i=0;i<w;i++){x.fillStyle=(i+y)%3==0?'#e9a817':'#ffcc33';x.fillRect(s+i,y,1,1)}}}
-function thumb(cv,seed,bg){const x=cv.getContext('2d');let s=0;for(const ch of seed)s=(s*31+ch.charCodeAt(0))>>>0;
- const rn=()=>(s=(s*1664525+1013904223)>>>0)/4294967296;x.fillStyle=bg;x.fillRect(0,0,8,8);x.fillStyle='#ffcc33';
- for(let y=0;y<8;y++)for(let i=0;i<4;i++)if(rn()>.45){x.fillRect(i,y,1,1);x.fillRect(7-i,y,1,1)}}
-const BG=['#3b1d5c','#1d4d3b','#5c3b1d','#1d3b5c','#5c1d3b','#2f2f6b','#6b1d1d'];
+/* ---------- art ---------- */
+const IC=['⛏️','🗡️','🧰','🕳️','🥚','💀','🌌'];
+/* draws a pile of gold that grows with your hoard (L = size 0-9) */
+function drawDragon(L){const rows=Math.min(5,1+Math.ceil(L/2));
+ let s='<svg viewBox="0 0 280 200" width="100%" aria-hidden="true"><defs><radialGradient id="gl" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#ffe9a3"/><stop offset="1" stop-color="#e59a12"/></radialGradient><linearGradient id="gm" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6ee7f9"/><stop offset="1" stop-color="#2563eb"/></linearGradient></defs><ellipse cx="140" cy="182" rx="'+(70+L*8)+'" ry="12" fill="rgba(0,0,0,.25)"/>';
+ for(let r=0;r<rows;r++){const n=Math.min(10,(rows-r)*2),y=164-r*24;
+  for(let c=0;c<n;c++){const x=140+(c-(n-1)/2)*25;
+   s+='<circle cx="'+x+'" cy="'+y+'" r="15" fill="url(#gl)" stroke="#b97500" stroke-width="2"/><circle cx="'+x+'" cy="'+y+'" r="8.5" fill="none" stroke="#b97500" stroke-opacity=".45" stroke-width="2"/>'}}
+ const top=164-rows*24+6;
+ s+='<polygon points="140,'+(top-34)+' 158,'+(top-14)+' 140,'+top+' 122,'+(top-14)+'" fill="url(#gm)" stroke="#1e40af" stroke-width="2"/><polyline points="122,'+(top-14)+' 158,'+(top-14)+'" stroke="#fff" stroke-opacity=".55" stroke-width="2" fill="none"/></svg>';
+ $('#hoard').innerHTML=s}
 
 /* ---------- interface ---------- */
-$('#gens').innerHTML=GEN.map(g=>`<div class="gen" id="r${g.i}" hidden><canvas width="8" height="8" id="s${g.i}" aria-hidden="true"></canvas><div class="gi"><b>${g.n}</b><small id="o${g.i}"></small></div><button class="buy" data-b="${g.i}" id="c${g.i}"></button></div>`).join('');
-GEN.forEach(g=>thumb($('#s'+g.i),g.n,BG[g.i]));
+$('#gens').innerHTML=GEN.map(g=>`<div class="gen" id="r${g.i}" hidden><div class="ic" aria-hidden="true">${IC[g.i]}</div><div class="gi"><b>${g.n}</b><small id="o${g.i}"></small></div><button class="buy" data-b="${g.i}" id="c${g.i}"></button></div>`).join('');
 
 function msg(t){$('#msg').textContent=t;clearTimeout(mt);mt=setTimeout(()=>{$('#msg').textContent=''},8000)}
 function floatText(txt,e){const s=$('#stage').getBoundingClientRect(),el=document.createElement('span');el.className='pop';el.textContent=txt;
@@ -141,7 +155,7 @@ function render(){
  $('#slumber').disabled=gain<1;
  const m=Math.floor((Date.now()-S.born)/60000);
  $('#stats').textContent='Lifetime gold '+f(S.all)+', pounces '+S.clicks+', slumbers '+S.runs+', time played '+Math.floor(m/60)+'h '+(m%60)+'m.';
- const L=Math.min(9,Math.floor(Math.log10(S.gold+1)));if(L!==pl){pl=L;drawDragon(L)}}
+ cdUi();const L=Math.min(9,Math.floor(Math.log10(S.gold+1)));if(L!==pl){pl=L;drawDragon(L)}}
 
 /* ---------- actions ---------- */
 function pounce(e){const v=cpow();earn(v);S.clicks++;floatText('+'+f(v),e);render()}
@@ -156,10 +170,38 @@ $('#slumber').addEventListener('click',slumber);
 document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
  if(b.dataset.b!==undefined)buyGen(+b.dataset.b);
  else if(b.dataset.u)buyUp(b.dataset.u);
+ else if(b.dataset.g)startMg(b.dataset.g);
  else if(b.dataset.m){mode=b.dataset.m;document.querySelectorAll('[data-m]').forEach(x=>x.setAttribute('aria-pressed',x===b));render()}});
 $('#exp').onclick=()=>{save();prompt('Copy this save code to keep it safe:',btoa(JSON.stringify(S)))};
 $('#imp').onclick=()=>{const c=prompt('Paste a save code:');if(!c)return;try{S=fix(JSON.parse(atob(c.trim())));upSig='';pl=-1;save();render();msg('Save loaded.')}catch(e){msg('That save code did not work.')}};
 $('#rst').onclick=()=>{if(confirm('Erase all progress, including dragon scales? This cannot be undone.')){S=fresh();upSig='';pl=-1;save();render()}};
+
+/* ---------- lair activities (minigames) ---------- */
+const cd={thief:0,strike:0},DESC={thief:'Catch thieves as they pop up',strike:'Time your swings for big payouts'};
+let mgT=0,raf=0,mgKey=null;
+const unit=()=>Math.max(gps()*20,25+cpow()*20);
+function cdUi(){['thief','strike'].forEach(g=>{const r=Math.ceil((cd[g]-Date.now())/1000),b=document.querySelector('[data-g="'+g+'"]');b.disabled=r>0;$('#cd-'+g).textContent=r>0?'Ready in '+r+'s':DESC[g]})}
+function mgOpen(h){$('#mg').hidden=false;$('#mgc').innerHTML=h}
+function mgEnd(g,gold,txt){cancelAnimationFrame(raf);clearInterval(mgT);mgKey=null;earn(gold);cd[g]=Date.now()+45000;
+ mgOpen('<h2>'+txt+'</h2><p class="big">+'+f(gold)+' gold</p><button class="buy" id="mgx">Collect</button>');$('#mgx').onclick=()=>{$('#mg').hidden=true;render()}}
+function startMg(g){if(Date.now()<cd[g])return;g=='thief'?thief():strike()}
+function thief(){let t=0,caught=0,streak=0,gold=0,hole=-1,until=0,next=500;const U=unit();
+ mgOpen('<h2>Guard the hoard</h2><p>Click the thieves as they pop up. Streaks pay more, so avoid missing.</p><div class="grid9">'+[0,1,2,3,4,5,6,7,8].map(i=>'<button class="hole"></button>').join('')+'</div><p id="mgs">Caught 0</p>');
+ const hs=[...document.querySelectorAll('.hole')];
+ hs.forEach((b,i)=>b.onclick=()=>{if(i===hole){hole=-1;streak++;caught++;gold+=U*.3*(1+Math.min(streak,10)*.1);b.classList.remove('on');next=t+rnd(150,300);$('#mgs').textContent='Caught '+caught+(streak>2?', streak '+streak:'')}else streak=0});
+ mgT=setInterval(()=>{t+=100;if(t>=15000)return mgEnd('thief',gold,caught?'Hoard defended: '+caught+' caught':'The thieves got away');
+  if(hole>=0&&t>=until){hole=-1;streak=0;hs.forEach(b=>b.classList.remove('on'))}
+  if(hole<0&&t>=next){hole=rnd(0,8);hs[hole].classList.add('on');until=t+Math.max(450,950-t/30);next=until+rnd(150,350)}},100)}
+function strike(){let n=0,streak=0,gold=0,z=.14;const U=unit(),t0=performance.now();
+ mgOpen('<h2>Perfect strike</h2><p>Press Strike (or Space) when the marker is in the green zone. The zone shrinks every swing.</p><div class="track"><i id="zone"></i><b id="mark"></b></div><p id="mgs">Swing 1 of 5</p><button class="buy" id="hit">Strike</button>');
+ const pos=()=>(Math.sin((performance.now()-t0)/1000*(2.2+n*.5))+1)/2,zone=$('#zone');
+ const paint=()=>{zone.style.left=(50-z*50)+'%';zone.style.width=(z*100)+'%'};paint();
+ const loop=()=>{$('#mark').style.left=pos()*100+'%';raf=requestAnimationFrame(loop)};loop();
+ const swing=()=>{const d=Math.abs(pos()-.5)*2;let m='Miss';
+  if(d<=z/3){gold+=U*.9*(1+streak*.25);streak++;m='Perfect!'}else if(d<=z){gold+=U*.45*(1+streak*.25);streak++;m='Good'}else streak=0;
+  n++;if(n>=5)return mgEnd('strike',gold,'Strike complete');z=Math.max(.05,z-.02);paint();$('#mgs').textContent=m+' Swing '+(n+1)+' of 5'};
+ $('#hit').onclick=swing;mgKey=swing}
+addEventListener('keydown',e=>{if(!$('#mg').hidden&&mgKey&&e.code=='Space'){e.preventDefault();mgKey()}});
 
 /* ---------- wandering adventurer: click for a bonus ---------- */
 function schedule(){setTimeout(spawn,rnd(50,110)*1000)}

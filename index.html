@@ -2,33 +2,32 @@
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Game Library</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
 <style>
-:root{color-scheme:light dark;--bg:#ece8f6;--fg:#1d1a30;--mu:#5d5878;--pn:#fff;--ed:#b9b1d6;--ac:#f2b705;--on:#1d1a30}
-@media (prefers-color-scheme:dark){:root{--bg:#16142a;--fg:#ece8ff;--mu:#a49fc4;--pn:#232042;--ed:#3f3a68;--ac:#ffcc33;--on:#1d1a30}}
+:root{color-scheme:light dark;--bg:#f6f7f9;--fg:#14161a;--mu:#667085;--pn:#fff;--bd:#e4e7ec;--ac:#4f46e5;--on:#fff}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1115;--fg:#f2f4f7;--mu:#98a2b3;--pn:#171a21;--bd:#262b36;--ac:#818cf8;--on:#0f1115}}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
-.wrap{max-width:940px;margin:0 auto;padding:36px 16px 64px}
-h1{font:700 clamp(30px,7vw,54px)/1.05 Silkscreen,"Courier New",monospace;margin:0 0 12px}
-.intro{max-width:52ch;color:var(--mu);margin:0}
-.bar{display:flex;flex-wrap:wrap;gap:10px;margin:28px 0 20px}
-input{flex:1;min-width:200px;font:inherit;color:var(--fg);background:var(--pn);border:2px solid var(--ed);border-radius:4px;padding:10px 12px}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:960px;margin:0 auto;padding:48px 20px 72px}
+h1{font-size:clamp(28px,5vw,40px);letter-spacing:-.025em;line-height:1.1;margin:0 0 8px}
+.intro{color:var(--mu);margin:0;max-width:52ch}
+.bar{display:flex;flex-wrap:wrap;gap:12px;margin:32px 0 20px}
+input{flex:1;min-width:220px;font:inherit;color:var(--fg);background:var(--pn);border:1px solid var(--bd);border-radius:10px;padding:11px 14px}
 .tags{display:flex;flex-wrap:wrap;gap:8px;width:100%}
-.tags button{font:inherit;font-size:14px;color:var(--fg);background:transparent;border:2px solid var(--ed);border-radius:4px;padding:4px 12px;cursor:pointer}
+.tags button{font:inherit;font-size:14px;color:var(--mu);background:transparent;border:1px solid var(--bd);border-radius:999px;padding:5px 14px;cursor:pointer}
 .tags button[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
 :focus-visible{outline:3px solid var(--ac);outline-offset:2px}
-.last{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;background:var(--pn);border:2px solid var(--ed);border-radius:4px;padding:10px 14px;margin-bottom:22px}
+.last{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;background:var(--pn);border:1px solid var(--bd);border-radius:14px;padding:12px 16px;margin-bottom:20px}
 .last[hidden]{display:none}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,400px),1fr));gap:22px}
-.card{display:flex;gap:14px;background:var(--pn);border:2px solid var(--ed);border-radius:4px;box-shadow:5px 5px 0 var(--ed);padding:12px}
-.card canvas{flex:none;width:96px;height:96px;image-rendering:pixelated;border-radius:2px}
-.card h2{font-size:19px;margin:0 0 2px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,420px),1fr));gap:18px}
+.card{display:flex;gap:16px;background:var(--pn);border:1px solid var(--bd);border-radius:16px;box-shadow:0 1px 2px rgba(16,24,40,.06);padding:16px;transition:box-shadow .15s}
+.card:hover{box-shadow:0 8px 24px rgba(16,24,40,.12)}
+.ic{flex:none;width:72px;height:72px;border-radius:16px;display:grid;place-items:center;font-size:34px}
+.card h2{font-size:18px;margin:0 0 2px}
 .card p{margin:0 0 6px;font-size:14px;color:var(--mu)}
 .card small{color:var(--mu)}
-.play{display:inline-block;margin-top:8px;background:var(--ac);color:var(--on);font-weight:700;text-decoration:none;padding:8px 20px;border-radius:4px;box-shadow:2px 2px 0 rgba(0,0,0,.4)}
-.play:hover{transform:translate(1px,1px);box-shadow:1px 1px 0 rgba(0,0,0,.4)}
-.soon{border:2px dashed var(--ed);border-radius:4px;padding:16px;color:var(--mu);display:flex;flex-direction:column;justify-content:center}
+.play{display:inline-block;margin-top:10px;background:var(--ac);color:var(--on);font-weight:600;text-decoration:none;padding:8px 20px;border-radius:999px}
+.play:hover{filter:brightness(1.1)}
+.soon{border:1px dashed var(--bd);border-radius:16px;padding:18px;color:var(--mu);display:flex;flex-direction:column;justify-content:center}
 .soon b{color:var(--fg)}
 .empty{color:var(--mu)}
 footer{margin-top:36px;color:var(--mu);font-size:14px}
@@ -50,7 +49,8 @@ footer{margin-top:36px;color:var(--mu);font-size:14px}
    list (newest first), and change the values.
      id     a short name with no spaces (used to remember what was played last)
      path   the folder inside games/ that holds the game's index.html (end with /)
-     colors [background, sprite] for the generated thumbnail
+     icon   one emoji shown on the card
+     colors [from, to] for the card icon's gradient
    ===================================================================== */
 const SITE = {
   title: 'Game Library',
@@ -59,11 +59,12 @@ const SITE = {
 const GAMES = [
   {
     id: 'dragons-hoard',
-    title: 'Dragon’s Hoard',
-    desc: 'An idle clicker. Pounce on your hoard, hire minions to earn gold while you are away, and slumber to grow stronger.',
-    tags: ['Incremental', 'Idle', 'Pixel art'],
+    title: 'Dragon\u2019s Hoard',
+    desc: 'An idle clicker with active minigames. Grow a hoard, hire minions, and defend your gold from thieves.',
+    tags: ['Incremental', 'Idle', 'Minigames'],
     path: 'games/dragons-hoard/',
-    colors: ['#6b1d1d', '#ffcc33']
+    icon: '\ud83d\udc09',
+    colors: ['#f59e0b', '#ea580c']
   },
   {
     id: 'seven-floors-down',
@@ -71,7 +72,8 @@ const GAMES = [
     desc: 'A turn-based pixel dungeon crawler. Pick a class, descend seven floors, and slay the Dungeon Lord.',
     tags: ['Roguelike', 'Turn-based', 'Pixel art'],
     path: 'games/seven-floors-down/',
-    colors: ['#3b1d5c', '#ffcc33']
+    icon: '\u2694\ufe0f',
+    colors: ['#6d28d9', '#be123c']
   }
 ];
 /* ===================================================================== */
@@ -88,23 +90,14 @@ function el(t, props, ...kids) {
   kids.forEach(k => e.append(k));
   return e;
 }
-/* Each game gets its own pixel sprite, generated from its id, so new games get a thumbnail automatically. */
-function thumb(g) {
-  const cv = el('canvas', { width: 8, height: 8 }), x = cv.getContext('2d');
-  let s = 0;
-  for (const ch of g.id) s = (s * 31 + ch.charCodeAt(0)) >>> 0;
-  const rnd = () => (s = (s * 1664525 + 1013904223) >>> 0) / 4294967296;
-  x.fillStyle = g.colors[0]; x.fillRect(0, 0, 8, 8);
-  x.fillStyle = g.colors[1];
-  for (let y = 0; y < 8; y++) for (let i = 0; i < 4; i++) if (rnd() > .45) { x.fillRect(i, y, 1, 1); x.fillRect(7 - i, y, 1, 1); }
-  cv.setAttribute('aria-hidden', 'true');
-  return cv;
-}
 function remember(id) { try { localStorage.setItem('lib_last', id); } catch (e) {} }
 function card(g) {
   const play = el('a', { className: 'play', href: g.path, textContent: 'Play' });
   play.addEventListener('click', () => remember(g.id));
-  return el('div', { className: 'card' }, thumb(g),
+  const ic = el('div', { className: 'ic', textContent: g.icon || '\ud83c\udfae' });
+  ic.style.background = 'linear-gradient(135deg,' + g.colors[0] + ',' + g.colors[1] + ')';
+  ic.setAttribute('aria-hidden', 'true');
+  return el('div', { className: 'card' }, ic,
     el('div', {}, el('h2', { textContent: g.title }), el('p', { textContent: g.desc }),
       el('small', { textContent: g.tags.join(', ') }), el('br'), play));
 }
