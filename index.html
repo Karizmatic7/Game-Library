@@ -2,66 +2,107 @@
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Game Library</title>
+<script>
+/* If a game's "back to library" button loads this page inside the game frame, tell the parent to show Home instead. */
+if (top !== self) { document.documentElement.style.display = 'none'; try { parent.postMessage('lib-home', '*'); } catch (e) {} }
+</script>
 <style>
-:root{color-scheme:light dark;--bg:#f6f7f9;--fg:#14161a;--mu:#667085;--pn:#fff;--bd:#e4e7ec;--ac:#4f46e5;--on:#fff}
-@media (prefers-color-scheme:dark){:root{--bg:#0f1115;--fg:#f2f4f7;--mu:#98a2b3;--pn:#171a21;--bd:#262b36;--ac:#818cf8;--on:#0f1115}}
+:root{color-scheme:light dark;--bg:#f6f7f9;--fg:#14161a;--mu:#667085;--pn:#fff;--bd:#e4e7ec;--ac:#4f46e5;--on:#fff;--sb:#eef0f4;--sel:#dfe1fb}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1115;--fg:#f2f4f7;--mu:#98a2b3;--pn:#171a21;--bd:#262b36;--ac:#818cf8;--on:#0f1115;--sb:#13161c;--sel:#262c4d}}
 *{box-sizing:border-box}
+html,body{height:100%}
 body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-.wrap{max-width:960px;margin:0 auto;padding:48px 20px 72px}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--ac);outline-offset:2px}
+.app{--sw:260px;display:grid;grid-template-columns:var(--sw) 1fr;height:100dvh;transition:grid-template-columns .18s}
+.app.col{--sw:68px}
+.side{background:var(--sb);border-right:1px solid var(--bd);display:flex;flex-direction:column;min-width:0;overflow:hidden}
+.sh{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:14px 12px 8px}
+.brand{font-weight:700;font-size:17px;letter-spacing:-.01em;white-space:nowrap;padding-left:4px}
+.sq{background:transparent;border:1px solid var(--bd);border-radius:8px;width:32px;height:32px;line-height:1;font-size:18px;color:var(--mu)}
+.sq:hover{color:var(--fg)}
+#q{margin:4px 12px 10px;font:inherit;font-size:14px;color:var(--fg);background:var(--pn);border:1px solid var(--bd);border-radius:10px;padding:8px 12px;min-width:0}
+nav{display:flex;flex-direction:column;gap:2px;padding:0 8px 12px;overflow:auto}
+.it{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:transparent;border:0;border-radius:10px;padding:7px 8px}
+.it:hover{background:var(--bd)}
+.it.on{background:var(--sel);font-weight:600}
+.ic{flex:none;width:34px;height:34px;border-radius:9px;display:grid;place-items:center;font-size:18px}
+.tx{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.app.col .brand,.app.col #q,.app.col .tx{display:none}
+.app.col .sh{justify-content:center;padding:14px 0 8px}
+.app.col .it{justify-content:center}
+.main{display:flex;flex-direction:column;min-width:0;height:100dvh}
+.top{display:flex;align-items:center;gap:10px;padding:8px 14px;border-bottom:1px solid var(--bd);min-height:48px}
+.top .sq{display:none}
+#cur{font-weight:600}
+#game{flex:1;width:100%;border:0;background:var(--bg)}
+.home{flex:1;overflow:auto;padding:36px 24px 64px}
+.home>div{max-width:940px;margin:0 auto}
 h1{font-size:clamp(28px,5vw,40px);letter-spacing:-.025em;line-height:1.1;margin:0 0 8px}
 .intro{color:var(--mu);margin:0;max-width:52ch}
-.bar{display:flex;flex-wrap:wrap;gap:12px;margin:32px 0 20px}
-input{flex:1;min-width:220px;font:inherit;color:var(--fg);background:var(--pn);border:1px solid var(--bd);border-radius:10px;padding:11px 14px}
-.tags{display:flex;flex-wrap:wrap;gap:8px;width:100%}
-.tags button{font:inherit;font-size:14px;color:var(--mu);background:transparent;border:1px solid var(--bd);border-radius:999px;padding:5px 14px;cursor:pointer}
+.tags{display:flex;flex-wrap:wrap;gap:8px;margin:26px 0 20px}
+.tags button{font-size:14px;color:var(--mu);background:transparent;border:1px solid var(--bd);border-radius:999px;padding:5px 14px}
 .tags button[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
-:focus-visible{outline:3px solid var(--ac);outline-offset:2px}
 .last{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;background:var(--pn);border:1px solid var(--bd);border-radius:14px;padding:12px 16px;margin-bottom:20px}
-.last[hidden]{display:none}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,420px),1fr));gap:18px}
-.card{display:flex;gap:16px;background:var(--pn);border:1px solid var(--bd);border-radius:16px;box-shadow:0 1px 2px rgba(16,24,40,.06);padding:16px;transition:box-shadow .15s}
-.card:hover{box-shadow:0 8px 24px rgba(16,24,40,.12)}
-.ic{flex:none;width:72px;height:72px;border-radius:16px;display:grid;place-items:center;font-size:34px}
+.last[hidden],[hidden]{display:none!important}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,380px),1fr));gap:18px}
+.card{display:flex;gap:16px;background:var(--pn);border:1px solid var(--bd);border-radius:16px;box-shadow:0 1px 2px rgba(16,24,40,.06);padding:16px}
+.card .ic{width:72px;height:72px;border-radius:16px;font-size:34px}
 .card h2{font-size:18px;margin:0 0 2px}
 .card p{margin:0 0 6px;font-size:14px;color:var(--mu)}
 .card small{color:var(--mu)}
-.play{display:inline-block;margin-top:10px;background:var(--ac);color:var(--on);font-weight:600;text-decoration:none;padding:8px 20px;border-radius:999px}
+.play{display:inline-block;margin-top:10px;background:var(--ac);color:var(--on);font-weight:600;border:0;padding:8px 22px;border-radius:999px}
 .play:hover{filter:brightness(1.1)}
 .soon{border:1px dashed var(--bd);border-radius:16px;padding:18px;color:var(--mu);display:flex;flex-direction:column;justify-content:center}
 .soon b{color:var(--fg)}
-.empty{color:var(--mu)}
-footer{margin-top:36px;color:var(--mu);font-size:14px}
+footer{margin-top:30px;color:var(--mu);font-size:14px}
+#bd{display:none}
+@media (max-width:700px){
+ .app,.app.col{grid-template-columns:1fr}
+ .side{position:fixed;inset:0 auto 0 0;width:270px;z-index:20;transform:translateX(-100%);transition:transform .2s}
+ .app.open .side{transform:none}
+ .app.col .brand,.app.col #q,.app.col .tx{display:initial}
+ .app.col .it{justify-content:flex-start}.app.col .sh{justify-content:space-between;padding:14px 12px 8px}
+ .top .sq{display:block}
+ .app.open #bd{display:block;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:10}
+ .home{padding:24px 16px 48px}
+}
 </style></head><body>
-<div class="wrap">
-<h1 id="title">Game Library</h1>
-<p class="intro" id="tagline"></p>
-<div class="bar">
-<input id="q" type="search" placeholder="Search games" aria-label="Search games">
-<div class="tags" id="tags"></div>
-</div>
-<div class="last" id="last" hidden><span id="lasttxt"></span><a class="play" id="lastlink" style="margin:0" href="#">Play again</a></div>
-<div class="grid" id="grid"></div>
-<footer id="count"></footer>
+<div class="app" id="app">
+ <aside class="side" id="side">
+  <div class="sh"><span class="brand">Game Library</span><button class="sq" id="col" aria-label="Collapse sidebar">&#8249;</button></div>
+  <input id="q" type="search" placeholder="Search games" aria-label="Search games">
+  <nav id="nav" aria-label="Games"></nav>
+ </aside>
+ <div class="main">
+  <div class="top"><button class="sq" id="menu" aria-label="Open sidebar">&#9776;</button><span id="cur">Home</span></div>
+  <section class="home" id="home"><div>
+   <h1 id="title">Game Library</h1><p class="intro" id="tagline"></p>
+   <div class="tags" id="tags"></div>
+   <div class="last" id="last" hidden><span id="lasttxt"></span><button class="play" id="lastbtn" style="margin:0">Play again</button></div>
+   <div class="grid" id="grid"></div>
+   <footer id="count"></footer>
+  </div></section>
+  <iframe id="game" title="Game" hidden allow="fullscreen"></iframe>
+ </div>
+ <div id="bd"></div>
 </div>
 <script>
 /* =====================================================================
    ADD A NEW GAME: copy one { ... } block below, paste it at the top of the
    list (newest first), and change the values.
-     id     a short name with no spaces (used to remember what was played last)
+     id     a short name with no spaces (used for the web address and last played)
      path   the folder inside games/ that holds the game's index.html (end with /)
-     icon   one emoji shown on the card
-     colors [from, to] for the card icon's gradient
+     icon   one emoji shown next to the game
+     colors [from, to] for the icon's gradient
    ===================================================================== */
-const SITE = {
-  title: 'Game Library',
-  tagline: 'Browser games you can play right now. No installs, no accounts.'
-};
+const SITE = { title: 'Game Library', tagline: 'Browser games you can play right now. No installs, no accounts.' };
 const GAMES = [
   {
     id: 'dragons-hoard',
     title: 'Dragon\u2019s Hoard',
-    desc: 'An idle clicker with active minigames. Grow a hoard, hire minions, and defend your gold from thieves.',
-    tags: ['Incremental', 'Idle', 'Minigames'],
+    desc: 'Defend your dragon\u2019s hoard from adventurers. Aim your fire, build combos, and upgrade your brood while you earn gold.',
+    tags: ['Incremental', 'Action', 'Defense'],
     path: 'games/dragons-hoard/',
     icon: '\ud83d\udc09',
     colors: ['#f59e0b', '#ea580c']
@@ -78,55 +119,70 @@ const GAMES = [
 ];
 /* ===================================================================== */
 
-const $ = s => document.querySelector(s);
-let tag = 'All', query = '';
-document.title = SITE.title;
-$('#title').textContent = SITE.title;
-$('#tagline').textContent = SITE.tagline;
+const $ = s => document.querySelector(s), app = $('#app'), mq = matchMedia('(max-width:700px)');
+let cur = null, tag = 'All', q = '';
+$('#title').textContent = SITE.title; $('#tagline').textContent = SITE.tagline;
 
-function el(t, props, ...kids) {
-  const e = document.createElement(t);
-  Object.assign(e, props || {});
-  kids.forEach(k => e.append(k));
-  return e;
-}
+function el(t, props, ...kids) { const e = document.createElement(t); Object.assign(e, props || {}); kids.forEach(k => e.append(k)); return e; }
+const grad = c => 'linear-gradient(135deg,' + c[0] + ',' + c[1] + ')';
 function remember(id) { try { localStorage.setItem('lib_last', id); } catch (e) {} }
-function card(g) {
-  const play = el('a', { className: 'play', href: g.path, textContent: 'Play' });
-  play.addEventListener('click', () => remember(g.id));
-  const ic = el('div', { className: 'ic', textContent: g.icon || '\ud83c\udfae' });
-  ic.style.background = 'linear-gradient(135deg,' + g.colors[0] + ',' + g.colors[1] + ')';
-  ic.setAttribute('aria-hidden', 'true');
-  return el('div', { className: 'card' }, ic,
-    el('div', {}, el('h2', { textContent: g.title }), el('p', { textContent: g.desc }),
-      el('small', { textContent: g.tags.join(', ') }), el('br'), play));
-}
-function render() {
-  const all = ['All', ...new Set(GAMES.flatMap(g => g.tags))];
-  $('#tags').replaceChildren(...all.map(t => {
-    const b = el('button', { textContent: t, type: 'button' });
-    b.setAttribute('aria-pressed', t === tag);
-    b.addEventListener('click', () => { tag = t; render(); });
-    return b;
-  }));
-  const q = query.trim().toLowerCase();
-  const list = GAMES.filter(g => (tag === 'All' || g.tags.includes(tag)) &&
-    (!q || (g.title + ' ' + g.desc + ' ' + g.tags.join(' ')).toLowerCase().includes(q)));
-  const grid = $('#grid');
-  grid.replaceChildren(...list.map(card));
-  if (!list.length) grid.append(el('p', { className: 'empty', textContent: 'No games match that search. Clear it to see every game.' }));
-  else if (tag === 'All' && !q) grid.append(el('div', { className: 'soon' }, el('b', { textContent: 'More games on the way' }), 'New games show up here as soon as they are finished.'));
-  $('#count').textContent = GAMES.length + (GAMES.length === 1 ? ' game' : ' games') + ' in the library';
-}
-$('#q').addEventListener('input', e => { query = e.target.value; render(); });
 
-let last = null;
-try { last = GAMES.find(g => g.id === localStorage.getItem('lib_last')); } catch (e) {}
-if (last) {
-  $('#last').hidden = false;
-  $('#lasttxt').textContent = 'You last played ' + last.title + '.';
-  $('#lastlink').href = last.path;
+/* ----- sidebar ----- */
+function item(id, title, icon, colors) {
+  const on = (cur || 'home') === id;
+  const ic = el('span', { className: 'ic', textContent: icon }); ic.style.background = grad(colors); ic.setAttribute('aria-hidden', 'true');
+  const b = el('button', { className: 'it' + (on ? ' on' : ''), title }, ic, el('span', { className: 'tx', textContent: title }));
+  if (on) b.setAttribute('aria-current', 'page');
+  b.onclick = () => id === 'home' ? home() : openGame(id);
+  return b;
 }
-render();
+function renderNav() {
+  const s = q.trim().toLowerCase();
+  $('#nav').replaceChildren(item('home', 'Home', '\ud83c\udfe0', ['#64748b', '#334155']),
+    ...GAMES.filter(g => !s || g.title.toLowerCase().includes(s)).map(g => item(g.id, g.title, g.icon, g.colors)));
+}
+$('#q').addEventListener('input', e => { q = e.target.value; renderNav(); });
+function setCol(on) { app.classList.toggle('col', on); $('#col').innerHTML = on ? '&#8250;' : '&#8249;'; try { localStorage.setItem('lib_col', on ? '1' : ''); } catch (e) {} }
+function toggle() { if (mq.matches) app.classList.toggle('open'); else setCol(!app.classList.contains('col')); }
+$('#col').onclick = toggle; $('#menu').onclick = () => app.classList.toggle('open'); $('#bd').onclick = () => app.classList.remove('open');
+try { if (localStorage.getItem('lib_col')) setCol(true); } catch (e) {}
+
+/* ----- switching between Home and games ----- */
+function openGame(id) {
+  const g = GAMES.find(x => x.id === id); if (!g) return home();
+  app.classList.remove('open'); if (cur === id) return;
+  cur = id; remember(id);
+  $('#home').hidden = true; const fr = $('#game'); fr.hidden = false; fr.src = g.path;
+  $('#cur').textContent = g.title; document.title = g.title + ' - ' + SITE.title;
+  history.replaceState(null, '', '#' + id); renderNav();
+}
+function home() {
+  cur = null; app.classList.remove('open');
+  const fr = $('#game'); fr.hidden = true; fr.src = 'about:blank'; $('#home').hidden = false;
+  $('#cur').textContent = 'Home'; document.title = SITE.title;
+  history.replaceState(null, '', location.pathname + location.search); renderNav(); renderHome();
+}
+addEventListener('message', e => { if (e.data === 'lib-home') home(); });   /* sent by a game's "back to library" button */
+
+/* ----- home page ----- */
+function card(g) {
+  const ic = el('div', { className: 'ic', textContent: g.icon }); ic.style.background = grad(g.colors); ic.setAttribute('aria-hidden', 'true');
+  const play = el('button', { className: 'play', textContent: 'Play' }); play.onclick = () => openGame(g.id);
+  return el('div', { className: 'card' }, ic, el('div', {}, el('h2', { textContent: g.title }), el('p', { textContent: g.desc }),
+    el('small', { textContent: g.tags.join(', ') }), el('br'), play));
+}
+function renderHome() {
+  const all = ['All', ...new Set(GAMES.flatMap(g => g.tags))];
+  $('#tags').replaceChildren(...all.map(t => { const b = el('button', { textContent: t, type: 'button' }); b.setAttribute('aria-pressed', t === tag); b.onclick = () => { tag = t; renderHome(); }; return b; }));
+  const list = GAMES.filter(g => tag === 'All' || g.tags.includes(tag)), grid = $('#grid');
+  grid.replaceChildren(...list.map(card));
+  if (tag === 'All') grid.append(el('div', { className: 'soon' }, el('b', { textContent: 'More games on the way' }), 'New games show up here as soon as they are finished.'));
+  $('#count').textContent = GAMES.length + (GAMES.length === 1 ? ' game' : ' games') + ' in the library';
+  let last = null; try { last = GAMES.find(g => g.id === localStorage.getItem('lib_last')); } catch (e) {}
+  $('#last').hidden = !last;
+  if (last) { $('#lasttxt').textContent = 'You last played ' + last.title + '.'; $('#lastbtn').onclick = () => openGame(last.id); }
+}
+renderNav(); renderHome();
+const first = location.hash.slice(1); if (GAMES.some(g => g.id === first)) openGame(first);   /* links like ...#dragons-hoard open that game */
 </script>
 </body></html>
