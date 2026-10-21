@@ -38,7 +38,7 @@ h1,h2{margin:4px 0}small{color:var(--mu)}
 <div class="pn"><div id="acts"></div></div>
 <div class="pn" id="log"></div>
 <div id="dp"><span></span><button data-a="u">↑</button><span></span><button data-a="l">←</button><button data-a="x" title="Rest">z</button><button data-a="r">→</button><span></span><button data-a="d">↓</button><span></span></div>
-<small>Move: WASD/arrows · Attack: walk into enemies, or E · Skills: 1, 2 · Potions: H, M · Rest: space · Watch for spike traps and merchants</small> <button id="mt" data-a="mute">🔊</button> <a href="../../" style="color:var(--mu)">All games</a>
+<small>Move: WASD/arrows · Attack: walk into enemies, or E · Skills: 1, 2 · Potions: H, M · Rest: space · Watch for spike traps and merchants</small> <button id="mt" data-a="mute">🔊</button> <button id="qt" data-a="quit">Quit to library</button>
 </div>
 <div id="ov"><div class="pn" id="ovc"></div></div>
 <script>
@@ -189,9 +189,9 @@ return`<button data-a="s${i}" ${lk||cd||p.mp<s.c?'disabled':''}>${i+1}. ${s.n} �
 `<button data-a="h" ${inv.h?'':'disabled'}>Heal ×${inv.h} (H)</button><button data-a="m" ${inv.m?'':'disabled'}>Mana ×${inv.m} (M)</button>`;
 $('log').innerHTML=logs.map(l=>`<div style="color:${l[1]||'inherit'}">${l[0]}</div>`).join('')}
 function act(a){if(over||!p)return;const m={u:()=>mv(0,-1),d:()=>mv(0,1),l:()=>mv(-1,0),r:()=>mv(1,0),x:rest,e:auto,s0:()=>useSk(0),s1:()=>useSk(1),h:()=>pot('h'),m:()=>pot('m')};m[a]&&m[a]()}
-document.addEventListener('click',e=>{const b=e.target.closest('button[data-a]');if(!b)return;if(b.dataset.a=='mute'){muted=!muted;b.textContent=muted?'🔇':'🔊'}else act(b.dataset.a)});
+document.addEventListener('click',e=>{const b=e.target.closest('button[data-a]');if(!b)return;if(b.dataset.a=='mute'){muted=!muted;b.textContent=muted?'🔇':'🔊'}else if(b.dataset.a=='quit')quitAsk();else act(b.dataset.a)});
 const KM={w:'u',arrowup:'u',s:'d',arrowdown:'d',a:'l',arrowleft:'l',d:'r',arrowright:'r',' ':'x',z:'x',e:'e',1:'s0',f:'s0',2:'s1',g:'s1',h:'h',m:'m'};
-document.addEventListener('keydown',e=>{if($('ov').style.display=='flex'){const n={1:'Warrior',2:'Mage',3:'Rogue',4:'Cleric'}[e.key];if(n&&$('ovc').dataset.m)start(n);return}
+document.addEventListener('keydown',e=>{if(e.key=='Escape'){const o=$('ov').style.display=='flex';if(o&&$('ovc').dataset.q)quitKeep();else if(!o&&p&&!over)quitAsk();return}if($('ov').style.display=='flex'){const n={1:'Warrior',2:'Mage',3:'Rogue',4:'Cleric'}[e.key];if(n&&$('ovc').dataset.m)start(n);return}
 const a=KM[e.key.toLowerCase()];if(a){e.preventDefault();act(a)}});
 /* ---------- drawing ---------- */
 function draw(){X.fillStyle='#000';X.fillRect(0,0,cv.width,cv.height);if(!p){requestAnimationFrame(draw);return}
@@ -248,12 +248,15 @@ if(diff!=1){const sub=B.reduce((s,b)=>s+b[1],0);B.push([DMS[diff].n+' mode ('+(d
 const sc=B.reduce((s,b)=>s+b[1],0);let best=0;try{best=+localStorage.getItem('pyrogue_best')||0;if(sc>best)localStorage.setItem('pyrogue_best',sc)}catch(e){}
 const rec={t:Date.now(),cls:p.cls,w:w?1:0,sc,depth,lv:p.lv,kills,gold,turns,mh:p.mh,mm:p.mm,a:ta(),d:td(),wp:wpn?wpn.n+' +'+wpn.b:'none',ar:arm?arm.n+' +'+arm.b:'none',pk:p.pk||[],bk:B,kb:w?'':(p.kb||'unknown causes'),dy:daily?1:0,df:diff,bank:gold+depth*10};
 const rl=runs();rl.unshift(rec);try{localStorage.setItem('pyrogue_runs',JSON.stringify(rl.slice(0,40)))}catch(e){}
-setTimeout(()=>{$('ovc').dataset.m='';$('ov').style.display='flex';$('ovc').innerHTML=``+det(rec)+(sc>best?'<p style="text-align:center;color:#e8b923"><b>★ New high score! ★</b></p>':`<p><small>Best score: ${best}</small></p>`)+'<button class="c" onclick="menu()">Play again</button><button class="c" onclick="showHist()">Run history</button>'},700)}
+setTimeout(()=>{$('ovc').dataset.m='';$('ov').style.display='flex';$('ovc').innerHTML=``+det(rec)+(sc>best?'<p style="text-align:center;color:#e8b923"><b>★ New high score! ★</b></p>':`<p><small>Best score: ${best}</small></p>`)+'<button class="c" onclick="menu()">Play again</button><button class="c" onclick="showHist()">Run history</button><button class="c" onclick="location.href=\'../../\'">Back to library</button>'},700)}
 function showHist(){$('ovc').dataset.m='';$('ov').style.display='flex';const rl=runs(),best=Math.max(0,...rl.map(r=>r.sc));
 $('ovc').innerHTML='<h2>Run history</h2>'+(rl.length?`<p><small>${rl.length} runs · ${rl.filter(r=>r.w).length} wins · best score ${best}</small></p>`+rl.map((r,i)=>`<button class="c" onclick="showRun(${i})"><b>${r.sc}</b> · ${r.cls} · depth ${r.depth} · Lv ${r.lv} · ${r.w?'<span style="color:#4c4">Victory</span>':'died'}<br><small>${new Date(r.t).toLocaleDateString()}${r.dy?' · daily':''}</small></button>`).join(''):'<p>No runs recorded yet. Finish a run and it will show up here (runs from before this update weren’t saved).</p>')+'<button class="c" onclick="menu()">Back</button>'}
 function showRun(i){const r=runs()[i];if(!r)return showHist();$('ovc').innerHTML='<h2>Run details</h2>'+det(r)+'<button class="c" onclick="showHist()">Back to history</button>'}
 /* ---------- shop, perks, meta ---------- */
 function closeOv(){$('ov').style.display='none'}
+function quitAsk(){save();$('ovc').dataset.m='';$('ovc').dataset.q=1;$('ov').style.display='flex';
+$('ovc').innerHTML='<h2>Leave the game?</h2><p>Your run is saved after every turn, so you can continue it from the main menu next time.</p><button class="c" onclick="location.href=\'../../\'">Back to library</button><button class="c" onclick="quitKeep()">Keep playing</button>'}
+function quitKeep(){$('ovc').dataset.q='';closeOv()}
 function openShop(){$('ovc').dataset.m='';const o=[['Healing Potion',30,()=>inv.h++],['Mana Potion',20,()=>inv.m++],['+1 ATK',80,()=>p.a++],['+1 DFN',80,()=>p.d++]];window.SH=o;
 $('ov').style.display='flex';$('ovc').innerHTML=`<h2>Merchant</h2><p>Gold: ${gold}</p>`+o.map((x,i)=>`<button class="c" ${gold<x[1]?'disabled':''} onclick="buy(${i})">${x[0]} — ${x[1]}g</button>`).join('')+'<button class="c" onclick="closeOv()">Leave</button>'}
 function buy(i){const x=window.SH[i];if(gold<x[1])return;gold-=x[1];x[2]();snd(600,.1,'triangle');hud();openShop()}
@@ -271,6 +274,6 @@ function start(cls){const c=CL[cls];p={cls,x:0,y:0,dx:0,dy:0,hp:c.hp,mh:c.hp,mp:
 depth=1;gold=kills=turns=0;won=over=false;inv={h:0,m:0};wpn=arm=null;logs=[];txts=[];const M=meta();p.mh+=10*M.h;p.hp=p.mh;inv.h=M.p;p.a+=M.a;gen();say(`You enter the dungeon as a ${cls}. Walk into enemies to attack!`,'#9cf');
 $('ov').style.display='none';$('ovc').dataset.m='';hud()}
 function menu(){p=null;$('ov').style.display='flex';$('ovc').dataset.m=1;$('ovc').innerHTML='<h1>Seven Floors Down</h1><p>Descend '+MAXD+' floors and slay the Dungeon Lord. Turn-based: enemies move after you do.</p>'+(hasSave()?'<button class="c" onclick="load()"><b>▶ Continue your run</b></button>':'')+
-Object.entries(CL).map(([n,c],i)=>`<button class="c" onclick="start('${n}')"><b>${i+1}. ${n}</b> · HP ${c.hp} · MP ${c.mp} · ATK ${c.a} · DFN ${c.d}<br><small>${c.t}</small></button>`).join('')+`<button class="c" onclick="daily=!daily;menu()">Daily dungeon (same maps for everyone today): <b>${daily?'ON':'OFF'}</b></button>`+`<button class="c" onclick="diff=(diff+1)%3;menu()">Difficulty: <b>${DMS[diff].n}</b> — tap to change</button>`+`<button class="c" onclick="showHist()">Run history · ${runs().length} saved</button>`+`<button class="c" onclick="howTo()">How to play</button>`+upg()}
+Object.entries(CL).map(([n,c],i)=>`<button class="c" onclick="start('${n}')"><b>${i+1}. ${n}</b> · HP ${c.hp} · MP ${c.mp} · ATK ${c.a} · DFN ${c.d}<br><small>${c.t}</small></button>`).join('')+`<button class="c" onclick="daily=!daily;menu()">Daily dungeon (same maps for everyone today): <b>${daily?'ON':'OFF'}</b></button>`+`<button class="c" onclick="diff=(diff+1)%3;menu()">Difficulty: <b>${DMS[diff].n}</b> — tap to change</button>`+`<button class="c" onclick="showHist()">Run history · ${runs().length} saved</button>`+`<button class="c" onclick="howTo()">How to play</button>`+upg()+'<button class="c" onclick="location.href=\'../../\'">Back to library</button>'}
 menu();draw();
 </script></body></html>
