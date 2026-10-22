@@ -46,7 +46,7 @@ h1,h2{margin:4px 0}small{color:var(--mu)}
 <div id="ov"><div class="pn" id="ovc"></div></div>
 <script>
 const W=50,H=30,VW=17,VH=11,T=32,MAXD=7,R=8,D=[[0,-1],[0,1],[-1,0],[1,0]];
-const $=id=>document.getElementById(id),rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1)),pk=a=>a[rnd(0,a.length-1)];
+const $=id=>document.getElementById(id.startsWith('#')?id.slice(1):id),rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1)),pk=a=>a[rnd(0,a.length-1)];
 const ix=(x,y)=>y*W+x,dist=(a,b)=>Math.abs(a.x-b.x)+Math.abs(a.y-b.y);
 let AC,muted=false,daily=0,diff=1;const DMS=[{n:'Easy',h:.75,a:.8,s:-.25},{n:'Normal',h:1,a:1,s:0},{n:'Hard',h:1.25,a:1.2,s:.25}];const dayN=Math.floor(Date.now()/864e5);
 const THM=[['#524c70','#4a4468','#38335a'],['#5b5446','#50493c','#3f382b'],['#5e4545','#533b3b','#452c2c']],TC=k=>THM[Math.min(2,(depth-1)/2|0)][k];
