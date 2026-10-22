@@ -46,7 +46,7 @@ h1,h2{margin:4px 0}small{color:var(--mu)}
 <div id="ov"><div class="pn" id="ovc"></div></div>
 <script>
 const W=50,H=30,VW=17,VH=11,T=32,MAXD=7,R=8,D=[[0,-1],[0,1],[-1,0],[1,0]];
-const $=id=>document.getElementById(id.startsWith('#')?id.slice(1):id),rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1)),pk=a=>a[rnd(0,a.length-1)];
+const $=id=>document.getElementById(typeof id==='string'&&id.startsWith('#')?id.slice(1):id),rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1)),pk=a=>a[rnd(0,a.length-1)];
 const ix=(x,y)=>y*W+x,dist=(a,b)=>Math.abs(a.x-b.x)+Math.abs(a.y-b.y);
 let AC,muted=false,daily=0,diff=1;const DMS=[{n:'Easy',h:.75,a:.8,s:-.25},{n:'Normal',h:1,a:1,s:0},{n:'Hard',h:1.25,a:1.2,s:.25}];const dayN=Math.floor(Date.now()/864e5);
 const THM=[['#524c70','#4a4468','#38335a'],['#5b5446','#50493c','#3f382b'],['#5e4545','#533b3b','#452c2c']],TC=k=>THM[Math.min(2,(depth-1)/2|0)][k];
@@ -251,21 +251,41 @@ async function syncOld(){if(!lbOn()||!myName())return 0;let n=0;const done=synce
 function askName(cb){$('ovc').dataset.m='';$('ov').style.display='flex';
  $('ovc').innerHTML='<h2>Pick a leaderboard name</h2><p>This is shown next to your scores. Up to 20 characters.</p><input id="nm" maxlength="20" value="'+esc(myName())+'" style="width:100%;padding:10px;font:inherit;border-radius:8px;border:1px solid var(--bd);background:var(--pn);color:var(--fg)"><button class="c" id="nmok">Save name</button>';
  $('#nm').focus();$('#nmok').onclick=()=>{const v=$('#nm').value.trim().slice(0,20);if(v){setName(v);cb()}}}
-async function showLB(note){$('ovc').dataset.m='';$('ov').style.display='flex';const back='<button class="c" onclick="menu()">Back</button>';
- if(!lbOn()){$('ovc').innerHTML='<h2>Leaderboard</h2><p>The online leaderboard is not set up yet. The steps are in SETUP-LEADERBOARD.md.</p>'+back;return}
- $('ovc').innerHTML='<h2>Leaderboard</h2><p>Loading...</p>';
- try{const res=await fetch(lbApi()+'?orderBy=%22score%22&limitToLast=50'),d=await res.json()||{},me=myName();
-  const rows=Object.values(d).filter(r=>r&&typeof r.score=='number').sort((a,b)=>b.score-a.score);
-  $('ovc').innerHTML='<h2>Leaderboard</h2>'+(note?'<p><b>'+esc(note)+'</b></p>':'')+'<p><small>Top '+rows.length+' runs from players everywhere.'+(me?' You are playing as <b>'+esc(me)+'</b>.':'')+'</small></p><div class="lb">'+
-   rows.map((r,i)=>'<div class="lr'+(r.name===me?' me':'')+'"><b>'+(i+1)+'</b><span>'+esc(r.name)+'<small>'+esc(r.cls)+', depth '+(+r.depth||0)+', level '+(+r.lv||0)+(r.w?', won':'')+'</small></span><em>'+r.score+'</em></div>').join('')+'</div>'+
-   (rows.length?'':'<p>No scores yet. Be the first!</p>')+'<button class="c" id="chn">'+(me?'Change name':'Set name')+'</button>'+back;
-  $('#chn').onclick=()=>askName(async()=>{await syncOld();showLB()})
- }catch(e){$('ovc').innerHTML='<h2>Leaderboard</h2><p>Could not load the leaderboard. Check your connection and try again.</p>'+back}}
-function lbSubmit(rec){const s=$('#lbs');if(!s||!lbOn())return;
- const go=async()=>{s.textContent='Submitting your score...';const ok=await postScore(rec,myName());s.textContent=ok?'Score submitted to the leaderboard!':'Could not reach the leaderboard. Your run is saved on this device.';if(ok)syncOld()};
- if(myName())go();else{s.innerHTML='<button class="c" id="lbn">Submit to the leaderboard</button>';
-  $('#lbn').onclick=()=>askName(async()=>{const ok=await postScore(rec,myName());await syncOld();showLB(ok?'Score submitted!':'Could not submit your score right now.')})}}
-setTimeout(syncOld,2000);
+async function showLB(note){
+  $('ovc').dataset.m='';
+  $('ov').style.display='flex';
+  const back='<button class="c" onclick="menu()">Back</button>';
+  if(!lbOn()){
+    $('ovc').innerHTML='<h2>Leaderboard</h2><p>The online leaderboard is not set up yet.</p>'+back;
+    return;
+  }
+  $('ovc').innerHTML='<h2>Leaderboard</h2><p>Loading...</p>';
+  try{
+    const res = await fetch(lbApi() + '?orderBy=%22score%22&limitToLast=50');
+    if(!res.ok) throw new Error('Firebase returned HTTP ' + res.status);
+    const raw = await res.json();
+    const d = (raw && typeof raw === 'object') ? raw : {};
+    const me = myName();
+    const rows = Object.values(d).filter(r => r && typeof r.score === 'number').sort((a,b) => b.score - a.score);
+
+    $('ovc').innerHTML = '<h2>Leaderboard</h2>' + 
+      (note ? '<p><b>' + esc(note) + '</b></p>' : '') + 
+      '<p><small>Top ' + rows.length + ' runs from players everywhere.' + (me ? ' You are playing as <b>' + esc(me) + '</b>.' : '') + '</small></p>' +
+      '<div class="lb">' +
+      rows.map((r,i)=>'<div class="lr' + (r.name===me ? ' me' : '') + '"><b>' + (i+1) + '</b><span>' + esc(r.name) + '<small>' + esc(r.cls) + ', depth ' + (+r.depth||0) + ', level ' + (+r.lv||0) + (r.w ? ', won' : '') + '</small></span><em>' + r.score + '</em></div>').join('') +
+      '</div>' +
+      (rows.length ? '' : '<p>No scores yet. Be the first!</p>') +
+      '<button class="c" id="chn">' + (me ? 'Change name' : 'Set name') + '</button>' + back;
+
+    const chnBtn = $('chn') || document.getElementById('chn');
+    if(chnBtn) {
+      chnBtn.onclick = () => askName(async () => { await syncOld(); showLB(); });
+    }
+  }catch(e){
+    console.error('Leaderboard load error:', e);
+    $('ovc').innerHTML = '<h2>Leaderboard</h2><p>Could not load the leaderboard. Check your connection and try again.</p><p><small style="color:#f85149">' + esc(e.message) + '</small></p>' + back;
+  }
+}
 /* ---------- run history + score breakdown ---------- */
 const esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
 function runs(){try{return JSON.parse(localStorage.getItem('pyrogue_runs')||'[]')}catch(e){return[]}}
