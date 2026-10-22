@@ -133,50 +133,50 @@ if(p.cls=='Mage'){const d=Math.max(1,(ta()*1.5|0)-e.d+rnd(-1,1));say(`Arcane Bol
 let d=Math.max(1,ta()-e.d+rnd(-1,1));if(Math.random()<c.cr){d*=2;say(`CRITICAL! You hit ${e.n} for ${d}!`,'#fc3')}else say(`You hit ${e.n} for ${d}.`);hurt(e,d)}
 const SK={Warrior:[{n:'Shield Slam',c:4,cd:0,lv:1,f(){const t=nt(1);if(!t)return;t.st=2;const d=Math.max(1,ta()*2-t.d);say(`Shield Slam! ${t.n} takes ${d} and is stunned!`,'#6f6');hurt(t,d);return 1}},
 {n:'Whirlwind',c:7,cd:3,lv:3,f(){const h=es.filter(e=>Math.max(Math.abs(e.x-p.x),Math.abs(e.y-p.y))<=1);if(!h.length)return;say(`Whirlwind hits ${h.length}!`,'#6f6');h.forEach(e=>hurt(e,Math.max(1,(ta()*1.3|0)-e.d)));return 1}}],
-Mage:[{n:'Fireball',c:8,cd:0,lv:1,f(){const t=nt(5);if(!t)return;const d=Math.max(1,ta()*3-(t.d>>1)),sp=es.filter(e=>e!==t&&dist(e,t)<=1);say(`Fireball engulfs ${t.n} for ${d}!`,'#6f6');if(t.rs!='fire')t.bn=3;hurt(t,d,'#f93');sp.forEach(e=>{if(e.rs!='fire')e.bn=2;hurt(e,d>>1,'#f93')});return 1}},
-{n:'Frost Nova',c:10,cd:4,lv:3,f(){const h=es.filter(e=>dist(e,p)<=3&&los(p.x,p.y,e.x,e.y));if(!h.length)return;say(`Frost Nova freezes ${h.length}!`,'#6f6');h.forEach(e=>{e.st=2;let x=Math.max(1,ta()-(e.d>>1));if(e.bn>0){x+=4;e.bn=0}hurt(e,x,'#9df')});return 1}}],
-Rogue:[{n:'Shadowstrike',c:6,cd:0,lv:1,f(){const t=nt(1);if(!t)return;const h=Math.max(1,(ta()*1.5|0)-t.d);say(`Shadowstrike! Two critical hits for ${h} each!`,'#6f6');hurt(t,h*2,'#fc3');return 1}},
-{n:'Poison Blade',c:5,cd:2,lv:3,f(){const t=nt(1);if(!t)return;if(t.rs!='poi')t.poi=5;say(`Poison Blade! ${t.n} is poisoned!`,'#6f6');hurt(t,Math.max(1,ta()-t.d));return 1}}]};
-SK.Cleric=[{n:'Smite',c:5,cd:0,lv:1,f(){const t=nt(2);if(!t)return;const d=Math.max(1,ta()*2-t.d);say(`Smite! Holy fire sears ${t.n} for ${d}!`,'#6f6');if(t.rs!='fire')t.bn=3;hurt(t,d,'#fd6');return 1}},
-{n:'Mend',c:8,cd:3,lv:3,f(){if(p.hp>=p.mh&&!p.poi)return;const a=Math.max(15,p.mh/4|0);p.hp=Math.min(p.mh,p.hp+a);p.poi=0;pop(p.x,p.y,'+'+a,'#6f6');say(`Mend restores ${a} HP and cures poison.`,'#6f6');return 1}}];
+Mage:[{n:'Fireball',c:8,cd:0,lv:1,f(){const t=nt(5);if(!t)return;const d=Math.max(1,ta()*3-(t.d>>1)),sp=es.filter(e=>e!==t&&dist(e,t)<=1);say(`Fireball engulfs ${t.n} for ${d}!`, '#6f6');if(t.rs!='fire')t.bn=3;hurt(t,d,'#f93');sp.forEach(e=>{if(e.rs!='fire')e.bn=2;hurt(e,d>>1,'#f93')});return 1}},
+{n:'Frost Nova',c:10,cd:4,lv:3,f(){const h=es.filter(e=>dist(e,p)<=3&&los(p.x,p.y,e.x,e.y));if(!h.length)return;say(`Frost Nova freezes ${h.length}!`, '#6f6');h.forEach(e=>{e.st=2;let x=Math.max(1,ta()-(e.d>>1));if(e.bn>0){x+=4;e.bn=0}hurt(e,x,'#9df')});return 1}}],
+Rogue:[{n:'Shadowstrike',c:6,cd:0,lv:1,f(){const t=nt(1);if(!t)return;const h=Math.max(1,(ta()*1.5|0)-t.d);say(`Shadowstrike! Two critical hits for ${h} each!`, '#6f6');hurt(t,h*2,'#fc3');return 1}},
+{n:'Poison Blade',c:5,cd:2,lv:3,f(){const t=nt(1);if(!t)return;if(t.rs!='poi')t.poi=5;say(`Poison Blade! ${t.n} is poisoned!`, '#6f6');hurt(t,Math.max(1,ta()-t.d));return 1}}]};
+SK.Cleric=[{n:'Smite',c:5,cd:0,lv:1,f(){const t=nt(2);if(!t)return;const d=Math.max(1,ta()*2-t.d);say(`Smite! Holy fire sears ${t.n} for ${d}!`, '#6f6');if(t.rs!='fire')t.bn=3;hurt(t,d,'#fd6');return 1}},
+{n:'Mend',c:8,cd:3,lv:3,f(){if(p.hp>=p.mh&&!p.poi)return;const a=Math.max(15,p.mh/4|0);p.hp=Math.min(p.mh,p.hp+a);p.poi=0;pop(p.x,p.y,'+'+a,'#6f6');say(`Mend restores ${a} HP and cures poison.`, '#6f6');return 1}}];
 /* ---------- player actions ---------- */
-function grab(it){snd(700,.1,'triangle');if(it.t=='h'||it.t=='m'){inv[it.t]++;say(`Picked up a ${it.n} (press ${it.t.toUpperCase()}).`,'#fc3')}
-else if(it.t=='g'){gold+=it.v;say(`Found ${it.v} gold!`,'#fc3')}
-else if(it.t=='x'){p.a++;say(`Drank a ${it.n}. Attack +1 permanently!`,'#fc3')}else if(it.t=='y'){p.d++;say(`Equipped a ${it.n}. Defense +1 permanently!`,'#fc3')}
-else{const cur=it.k=='w'?wpn:arm;if(!cur||it.b>cur.b){if(it.k=='w'){wpn=it;p.ga=it.b}else{arm=it;p.gd=it.b}say(`Equipped ${it.n} (+${it.b})!`,'#9cf')}else{gold+=it.b*6;say(`${it.n} isn’t an upgrade. Sold for ${it.b*6} gold.`)}}}
+function grab(it){snd(700,.1,'triangle');if(it.t=='h'||it.t=='m'){inv[it.t]++;say(`Picked up a ${it.n} (press ${it.t.toUpperCase()}).`, '#fc3')}
+else if(it.t=='g'){gold+=it.v;say(`Found ${it.v} gold!`, '#fc3')}
+else if(it.t=='x'){p.a++;say(`Drank a ${it.n}. Attack +1 permanently!`, '#fc3')}else if(it.t=='y'){p.d++;say(`Equipped a ${it.n}. Defense +1 permanently!`, '#fc3')}
+else{const cur=it.k=='w'?wpn:arm;if(!cur||it.b>cur.b){if(it.k=='w'){wpn=it;p.ga=it.b}else{arm=it;p.gd=it.b}say(`Equipped ${it.n} (+${it.b})!`, '#9cf')}else{gold+=it.b*6;say(`${it.n} isn’t an upgrade. Sold for ${it.b*6} gold.`)}}}
 function mv(dx,dy){const nx=p.x+dx,ny=p.y+dy,t=es.find(e=>e.x==nx&&e.y==ny);if(t){atk(t);return end()}
-if(map[ix(nx,ny)])return;p.x=nx;p.y=ny;const i=ix(nx,ny);if(traps.has(i)&&traps.get(i)!==2){traps.set(i,2);p.kb='a spike trap';const d=Math.min(4+depth*2,p.hp-1);hurtP(d);say(`A spike trap hits you for ${d}!`,'#f66')}
+if(map[ix(nx,ny)])return;p.x=nx;p.y=ny;const i=ix(nx,ny);if(traps.has(i)&&traps.get(i)!==2){traps.set(i,2);p.kb='a spike trap';const d=Math.min(4+depth*2,p.hp-1);hurtP(d);say(`A spike trap hits you for ${d}!`, '#f66')}
 if(items.has(i)){const it=items.get(i);if(it.t=='shop')openShop();else{grab(it);items.delete(i)}}end()}
 function auto(){let t;if(p.cls=='Mage')t=nt(4);else t=es.filter(e=>dist(e,p)==1).sort((a,b)=>a.hp-b.hp)[0];
-if(!t){say(p.cls=='Mage'?'Nothing in range.':'Nothing adjacent. Walk into an enemy.','#fc3');return hud()}atk(t);end()}
-function useSk(i){const s=SK[p.cls][i];if(p.lv<s.lv)return say(`${s.n} unlocks at level ${s.lv}.`,'#fc3'),hud();
-if(p.cdn[i]>0||p.mp<s.c)return;p.mp-=s.c;inSk=1;const ok=s.f();inSk=0;if(!ok){p.mp+=s.c;say('No valid target!','#fc3');return hud()}if(s.cd)p.cdn[i]=s.cd+1;end()}
-function pot(k){if(!inv[k])return;if(k=='h'){if(p.hp>=p.mh)return say('Already at full HP.','#fc3'),hud();const a=Math.max(40,p.mh/3|0);p.hp=Math.min(p.mh,p.hp+a);p.poi=0;say(`Healing Potion: +${a} HP.`,'#f66')}
-else{if(p.mp>=p.mm)return say('Already at full MP.','#fc3'),hud();p.mp=Math.min(p.mm,p.mp+20);say('Mana Potion: +20 MP.','#6cf')}inv[k]--;end()}
+if(!t){say(p.cls=='Mage'?'Nothing in range.':'Nothing adjacent. Walk into an enemy.', '#fc3');return hud()}atk(t);end()}
+function useSk(i){const s=SK[p.cls][i];if(p.lv<s.lv)return say(`${s.n} unlocks at level ${s.lv}.`, '#fc3'),hud();
+if(p.cdn[i]>0||p.mp<s.c)return;p.mp-=s.c;inSk=1;const ok=s.f();inSk=0;if(!ok){p.mp+=s.c;say('No valid target!', '#fc3');return hud()}if(s.cd)p.cdn[i]=s.cd+1;end()}
+function pot(k){if(!inv[k])return;if(k=='h'){if(p.hp>=p.mh)return say('Already at full HP.', '#fc3'),hud();const a=Math.max(40,p.mh/3|0);p.hp=Math.min(p.mh,p.hp+a);p.poi=0;say(`Healing Potion: +${a} HP.`, '#f66')}
+else{if(p.mp>=p.mm)return say('Already at full MP.', '#fc3'),hud();p.mp=Math.min(p.mm,p.mp+20);say('Mana Potion: +20 MP.', '#6cf')}inv[k]--;end()}
 function rest(){p.mp=Math.min(p.mm,p.mp+2);say('You rest and focus (+2 MP).');end()}
 /* ---------- enemy AI ---------- */
 function step(e,dm){const c=dm.get(ix(e.x,e.y));if(c==null)return;for(const[dx,dy]of D.slice().sort(()=>Math.random()-.5)){const nx=e.x+dx,ny=e.y+dy;
 if((dm.get(ix(nx,ny))??9999)<c&&!occ(nx,ny)){e.x=nx;e.y=ny;return 1}}}
-function eh(e,m,v,rd){p.kb=e.n;const d=Math.max(1,(e.a*(m||1)|0)-(td()*(rd||1)|0)+rnd(-1,1));hurtP(d);say(`${e.n} ${v||'hits'} you for ${d}.`,'#e55')}
+function eh(e,m,v,rd){p.kb=e.n;const d=Math.max(1,(e.a*(m||1)|0)-(td()*(rd||1)|0)+rnd(-1,1));hurtP(d);say(`${e.n} ${v||'hits'} you for ${d}.`, '#e55')}
 const AI={mel(e,dm,d){d==1?eh(e):step(e,dm)},
 fast(e,dm,d){if(d==1)return eh(e);for(let i=0;i<2;i++){if(dist(e,p)==1||!step(e,dm))return}},
 slo(e,dm,d){e.tk^=1;if(!e.tk)AI.mel(e,dm,d)},
 rng(e,dm,d){if(d==1)eh(e,1,'stabs');else if(d<=5&&los(e.x,e.y,p.x,p.y))eh(e,1,'shoots',.5);else step(e,dm)},
-pha(e,dm,d){if(d==1){eh(e,1,'drains');if(Math.random()<.5&&!p.poi){p.poi=3;say('You are poisoned!','#6c6')}return}
+pha(e,dm,d){if(d==1){eh(e,1,'drains');if(Math.random()<.5&&!p.poi){p.poi=3;say('You are poisoned!', '#6c6')}return}
 const dx=p.x-e.x,dy=p.y-e.y,nx=Math.abs(dx)>=Math.abs(dy)?e.x+Math.sign(dx):e.x,ny=Math.abs(dx)>=Math.abs(dy)?e.y:e.y+Math.sign(dy);if(!occ(nx,ny)){e.x=nx;e.y=ny}},
 bat(e,dm,d){if(d==1&&Math.random()<.75)return eh(e);if(Math.random()<.4){const o=D.slice().sort(()=>Math.random()-.5).find(([dx,dy])=>!map[ix(e.x+dx,e.y+dy)]&&!occ(e.x+dx,e.y+dy));if(o){e.x+=o[0];e.y+=o[1]}}else step(e,dm)},
 sum(e,dm,d){e.ct--;const fr=([dx,dy])=>!map[ix(e.x+dx,e.y+dy)]&&!occ(e.x+dx,e.y+dy);
-if(e.ct<=0&&es.length<14){const o=D.find(fr);if(o){const m=mk(EN[0],e.x+o[0],e.y+o[1]);m.aw=1;m.xp=0;es.push(m);say('The Necromancer summons a goblin!','#c9f')}e.ct=5;return}
+if(e.ct<=0&&es.length<14){const o=D.find(fr);if(o){const m=mk(EN[0],e.x+o[0],e.y+o[1]);m.aw=1;m.xp=0;es.push(m);say('The Necromancer summons a goblin!', '#c9f')}e.ct=5;return}
 if(d==1)return eh(e);if(d<=3){const o=D.slice().sort((a,b)=>dist({x:e.x+b[0],y:e.y+b[1]},p)-dist({x:e.x+a[0],y:e.y+a[1]},p)).find(fr);if(o){e.x+=o[0];e.y+=o[1]}}else step(e,dm)},
-bos(e,dm,d){if(e.ch){e.ch=0;e.ct=e.hp<e.mh/2?2:4;if(d<=7&&los(e.x,e.y,p.x,p.y)){const a=Math.max(6,(e.a*1.5|0)-(td()>>1));p.kb=e.n;hurtP(a);say(`The ${e.n} breathes FIRE for ${a}!`,'#f93')}else say('The flames roar past harmlessly!','#6f6');return}
-if(--e.ct<=0){e.ch=1;say(`The ${e.n} rears back, flames building! Break line of sight!`,'#fc3');return}AI.mel(e,dm,d)}};
+bos(e,dm,d){if(e.ch){e.ch=0;e.ct=e.hp<e.mh/2?2:4;if(d<=7&&los(e.x,e.y,p.x,p.y)){const a=Math.max(6,(e.a*1.5|0)-(td()>>1));p.kb=e.n;hurtP(a);say(`The ${e.n} breathes FIRE for ${a}!`, '#f93')}else say('The flames roar past harmlessly!', '#6f6');return}
+if(--e.ct<=0){e.ch=1;say(`The ${e.n} rears back, flames building! Break line of sight!`, '#fc3');return}AI.mel(e,dm,d)}};
 function enemyTurn(){es.slice().forEach(e=>{if(e.poi>0){e.poi--;hurt(e,3,'#6c6')}if(e.bn>0&&es.includes(e)){e.bn--;hurt(e,4,'#f93')}});const dm=bfs();
 for(const e of es.slice()){if(p.hp<=0)break;if(!es.includes(e))continue;if(e.st>0){e.st--;continue}
 const pd=dm.get(ix(e.x,e.y)),d=dist(e,p),nr=e.ai=='pha'?d:pd;
 if(!e.aw){if(nr!=null&&nr<=9)e.aw=1;else continue}else if(!e.boss&&(nr==null||nr>22)){e.aw=0;continue}AI[e.ai](e,dm,d)}}
 /* ---------- turn flow ---------- */
 function end(){if(won)return finish(true);
-if(st&&p.x==st[0]&&p.y==st[1]){depth++;const h=p.mh/5|0;p.hp=Math.min(p.mh,p.hp+h);gen();say(`You descend to depth ${depth}. (+${h} HP)`,'#c9f');if(depth==MAXD)say('You feel a terrible heat from below...','#f66');hud();save();return}
+if(st&&p.x==st[0]&&p.y==st[1]){depth++;const h=p.mh/5|0;p.hp=Math.min(p.mh,p.hp+h);gen();say(`You descend to depth ${depth}. (+${h} HP)`, '#c9f');if(depth==MAXD)say('You feel a terrible heat from below...', '#f66');hud();save();return}
 turns++;if(turns%4==0)p.mp=Math.min(p.mm,p.mp+1);if(turns%8==0&&!p.poi)p.hp=Math.min(p.mh,p.hp+1);p.cdn=p.cdn.map(v=>Math.max(0,v-1));
 if(p.poi>0){p.poi--;p.kb='poison';hurtP(2)}if(p.hp>0)enemyTurn();fov();hints();hud();save();if(p.hp<=0)finish(false);else if(won)finish(true);else perk()}
 function finish(w){over=true;hud();const M=meta();M.b+=gold+depth*10;saveMeta(M);try{localStorage.removeItem('sfd_save')}catch(e){}finish2(w)}
@@ -220,7 +220,7 @@ function tip(ev){if(!p)return;const r=cv.getBoundingClientRect(),k=cv.width/r.wi
 $('tip').textContent=e?`${e.n} · HP ${e.hp}/${e.mh} · ATK ${e.a} · DFN ${e.d}${e.st?' · stunned':''}${e.poi?' · poisoned':''}${e.bn?' · burning':''}`:it?(it.n||(it.t=='shop'?'Merchant (walk into them to shop)':'Gold pile')):traps.get(i)>0&&exp.has(i)?'Spike trap':'Hover or tap an enemy or item for details.'}
 ['mousemove','click'].forEach(t=>cv.addEventListener(t,tip));
 /* ---------- hints, how-to, save/resume ---------- */
-function hint(k,t){try{const h=JSON.parse(localStorage.getItem('sfd_h')||'{}');if(h[k])return;h[k]=1;localStorage.setItem('sfd_h',JSON.stringify(h));say('💡 '+t,'#8cf')}catch(e){}}
+function hint(k,t){try{const h=JSON.parse(localStorage.getItem('sfd_h')||'{}');if(h[k])return;h[k]=1;localStorage.setItem('sfd_h',JSON.stringify(h));say('💡 '+t, '#8cf')}catch(e){}}
 function hints(){const v=e=>vis.has(ix(e.x,e.y));
 if(es.some(v))hint('en','Enemy in sight! Walk into it to attack. Attacks are free and restore MP; skills (keys 1, 2) cost MP.');
 if(p.hp<p.mh*.4)hint('lo','Low HP! Press H to drink a healing potion, or back off and rest with space.');
@@ -232,9 +232,9 @@ if(es.some(e=>e.bn>0&&v(e)))hint('bn','Burning enemies take damage each turn. Fr
 function howTo(){$('ovc').dataset.m='';$('ov').style.display='flex';$('ovc').innerHTML='<h2>How to play</h2>'+[['🧭','Move','WASD or arrow keys, or the on-screen pad. Enemies move after you do.'],['⚔️','Attack (free)','Walk into an enemy, or press E. Every hit restores a little MP.'],['✨','Skills','Press 1 and 2. They cost MP and some have a cooldown. Skill 2 unlocks at level 3.'],['🧪','Potions and rest','H heals, M restores MP. Space rests and restores 2 MP.'],['🗝️','Explore','Find gear, gold, perks and the merchant. Spike traps hurt. Take the stairs down.'],['🔥','Elements','Fire burns, frost freezes, poison lingers. Ogres resist fire and specters resist poison.'],['👑','Win','Reach floor 7 and defeat the Dungeon Lord.']].map(r=>`<div class="bx"><b>${r[0]} ${r[1]}</b><br><small>${r[2]}</small></div>`).join('')+'<button class="c" onclick="menu()">Back</button>'}
 const hasSave=()=>{try{return!!localStorage.getItem('sfd_save')}catch(e){return false}};
 function save(){if(!p||over||won)return;try{localStorage.setItem('sfd_save',JSON.stringify({map,es,items:[...items],traps:[...traps],st,exp:[...exp],p,depth,gold,kills,turns,inv,wpn,arm,logs,daily,diff}))}catch(e){}}
-function load(){try{const s=JSON.parse(localStorage.getItem('sfd_save'));if(!s)return;({map,es,st,p,depth,gold,kills,turns,inv,wpn,arm,logs,daily,diff}=s);items=new Map(s.items);traps=new Map(s.traps);exp=new Set(s.exp);won=over=false;txts=[];fov();$('ov').style.display='none';$('ovc').dataset.m='';say('Run resumed.','#9cf');hud();perk()}catch(e){}}
+function load(){try{const s=JSON.parse(localStorage.getItem('sfd_save'));if(!s)return;({map,es,st,p,depth,gold,kills,turns,inv,wpn,arm,logs,daily,diff}=s);items=new Map(s.items);traps=new Map(s.traps);exp=new Set(s.exp);won=over=false;txts=[];fov();$('ov').style.display='none';$('ovc').dataset.m='';say('Run resumed.', '#9cf');hud();perk()}catch(e){}}
 /* ---------- online leaderboard ---------- */
-/* Paste your Firebase Realtime Database address between the quotes (see SETUP-LEADERBOARD.md).
+/* Paste your Firebase Realtime Database address between the quotes (e.g. 'https://your-project.firebaseio.com/').
    Leave it empty to keep scores on this device only. */
 const LB_URL='';
 const lbOn=()=>!!LB_URL,lbApi=()=>LB_URL.replace(/\/$/,'')+'/scores.json';
@@ -243,8 +243,29 @@ const setName=n=>{try{localStorage.setItem('sfd_name',n)}catch(e){}};
 const synced=()=>{try{return JSON.parse(localStorage.getItem('sfd_synced')||'[]')}catch(e){return[]}};
 function markSynced(t){try{const a=synced();a.push(t);localStorage.setItem('sfd_synced',JSON.stringify(a.slice(-300)))}catch(e){}}
 async function postScore(r,name){if(!lbOn())return false;
- try{const res=await fetch(lbApi(),{method:'POST',body:JSON.stringify({name:name.slice(0,20),score:r.sc,cls:r.cls,depth:r.depth,lv:r.lv,kills:r.kills,w:r.w?1:0,df:r.df==null?1:r.df,t:r.t})});
-  if(res.ok){markSynced(r.t);return true}}catch(e){}return false}
+ try{
+   const cleanName = (name || 'Anonymous').trim().slice(0,20) || 'Anonymous';
+   const cleanScore = Math.max(0, Math.min(30000, Number(r.sc) || 0));
+   const payload = {
+     name: cleanName,
+     score: cleanScore,
+     cls: String(r.cls || 'Warrior'),
+     depth: Number(r.depth) || 1,
+     lv: Number(r.lv) || 1,
+     kills: Number(r.kills) || 0,
+     w: r.w ? 1 : 0,
+     df: r.df == null ? 1 : Number(r.df),
+     t: Number(r.t) || Date.now()
+   };
+   const res = await fetch(lbApi(), {
+     method: 'POST',
+     headers: { 'Content-Type': 'application/json' },
+     body: JSON.stringify(payload)
+   });
+   if(res.ok){ markSynced(r.t); return true; }
+ }catch(e){}
+ return false;
+}
 /* uploads runs this device saved before the leaderboard existed (each run is only sent once) */
 async function syncOld(){if(!lbOn()||!myName())return 0;let n=0;const done=synced();
  for(const r of runs().slice().reverse())if(!done.includes(r.t)&&await postScore(r,myName()))n++;return n}
@@ -252,15 +273,17 @@ function askName(cb){$('ovc').dataset.m='';$('ov').style.display='flex';
  $('ovc').innerHTML='<h2>Pick a leaderboard name</h2><p>This is shown next to your scores. Up to 20 characters.</p><input id="nm" maxlength="20" value="'+esc(myName())+'" style="width:100%;padding:10px;font:inherit;border-radius:8px;border:1px solid var(--bd);background:var(--pn);color:var(--fg)"><button class="c" id="nmok">Save name</button>';
  $('#nm').focus();$('#nmok').onclick=()=>{const v=$('#nm').value.trim().slice(0,20);if(v){setName(v);cb()}}}
 async function showLB(note){$('ovc').dataset.m='';$('ov').style.display='flex';const back='<button class="c" onclick="menu()">Back</button>';
- if(!lbOn()){$('ovc').innerHTML='<h2>Leaderboard</h2><p>The online leaderboard is not set up yet. The steps are in SETUP-LEADERBOARD.md.</p>'+back;return}
+ if(!lbOn()){$('ovc').innerHTML='<h2>Leaderboard</h2><p>The online leaderboard URL is not configured yet. Paste your database URL into LB_URL in index.html.</p>'+back;return}
  $('ovc').innerHTML='<h2>Leaderboard</h2><p>Loading...</p>';
- try{const res=await fetch(lbApi()+'?orderBy=%22score%22&limitToLast=50'),d=await res.json()||{},me=myName();
-  const rows=Object.values(d).filter(r=>r&&typeof r.score=='number').sort((a,b)=>b.score-a.score);
+ try{
+  const res = await fetch(lbApi() + '?orderBy=%22score%22&limitToLast=50');
+  const d = await res.json() || {}, me = myName();
+  const rows = Object.values(d).filter(r => r && typeof r.score === 'number').sort((a,b) => b.score - a.score);
   $('ovc').innerHTML='<h2>Leaderboard</h2>'+(note?'<p><b>'+esc(note)+'</b></p>':'')+'<p><small>Top '+rows.length+' runs from players everywhere.'+(me?' You are playing as <b>'+esc(me)+'</b>.':'')+'</small></p><div class="lb">'+
    rows.map((r,i)=>'<div class="lr'+(r.name===me?' me':'')+'"><b>'+(i+1)+'</b><span>'+esc(r.name)+'<small>'+esc(r.cls)+', depth '+(+r.depth||0)+', level '+(+r.lv||0)+(r.w?', won':'')+'</small></span><em>'+r.score+'</em></div>').join('')+'</div>'+
    (rows.length?'':'<p>No scores yet. Be the first!</p>')+'<button class="c" id="chn">'+(me?'Change name':'Set name')+'</button>'+back;
   $('#chn').onclick=()=>askName(async()=>{await syncOld();showLB()})
- }catch(e){$('ovc').innerHTML='<h2>Leaderboard</h2><p>Could not load the leaderboard. Check your connection and try again.</p>'+back}}
+ }catch(e){$('ovc').innerHTML='<h2>Leaderboard</h2><p>Could not load the leaderboard. Check your connection or database URL.</p>'+back}}
 function lbSubmit(rec){const s=$('#lbs');if(!s||!lbOn())return;
  const go=async()=>{s.textContent='Submitting your score...';const ok=await postScore(rec,myName());s.textContent=ok?'Score submitted to the leaderboard!':'Could not reach the leaderboard. Your run is saved on this device.';if(ok)syncOld()};
  if(myName())go();else{s.innerHTML='<button class="c" id="lbn">Submit to the leaderboard</button>';
@@ -284,14 +307,14 @@ if(diff!=1){const sub=B.reduce((s,b)=>s+b[1],0);B.push([DMS[diff].n+' mode ('+(d
 const sc=B.reduce((s,b)=>s+b[1],0);let best=0;try{best=+localStorage.getItem('pyrogue_best')||0;if(sc>best)localStorage.setItem('pyrogue_best',sc)}catch(e){}
 const rec={t:Date.now(),cls:p.cls,w:w?1:0,sc,depth,lv:p.lv,kills,gold,turns,mh:p.mh,mm:p.mm,a:ta(),d:td(),wp:wpn?wpn.n+' +'+wpn.b:'none',ar:arm?arm.n+' +'+arm.b:'none',pk:p.pk||[],bk:B,kb:w?'':(p.kb||'unknown causes'),dy:daily?1:0,df:diff,bank:gold+depth*10};
 const rl=runs();rl.unshift(rec);try{localStorage.setItem('pyrogue_runs',JSON.stringify(rl.slice(0,40)))}catch(e){}
-setTimeout(()=>{$('ovc').dataset.m='';$('ov').style.display='flex';$('ovc').innerHTML=``+det(rec)+(sc>best?'<p style="text-align:center;color:#e8b923"><b>★ New high score! ★</b></p>':`<p><small>Best score: ${best}</small></p>`)+'<p id="lbs"></p><button class="c" onclick="menu()">Play again</button><button class="c" onclick="showHist()">Run history</button><button class="c" onclick="showLB()">Leaderboard</button><button class="c" onclick="location.href=\'../../\'">Back to library</button>';lbSubmit(rec)},700)}
+setTimeout(()=>{$('ovc').dataset.m='';$('ov').style.display='flex';$('ovc').innerHTML=``+det(rec)+(sc>best?'<p style="text-align:center;color:#e8b923"><b>★ New high score! ★</b></p>':`<p><small>Best score: ${best}</small></p>`)+'<p id="lbs"></p><button class="c" onclick="menu()">Play again</button><button class="c" onclick="showHist()">Run history</button><button class="c" onclick="showLB()">Leaderboard</button><button class="c" onclick="location.href='../../'">Back to library</button>';lbSubmit(rec)},700)}
 function showHist(){$('ovc').dataset.m='';$('ov').style.display='flex';const rl=runs(),best=Math.max(0,...rl.map(r=>r.sc));
 $('ovc').innerHTML='<h2>Run history</h2>'+(rl.length?`<p><small>${rl.length} runs · ${rl.filter(r=>r.w).length} wins · best score ${best}</small></p>`+rl.map((r,i)=>`<button class="c" onclick="showRun(${i})"><b>${r.sc}</b> · ${r.cls} · depth ${r.depth} · Lv ${r.lv} · ${r.w?'<span style="color:#4c4">Victory</span>':'died'}<br><small>${new Date(r.t).toLocaleDateString()}${r.dy?' · daily':''}</small></button>`).join(''):'<p>No runs recorded yet. Finish a run and it will show up here (runs from before this update weren’t saved).</p>')+'<button class="c" onclick="menu()">Back</button>'}
 function showRun(i){const r=runs()[i];if(!r)return showHist();$('ovc').innerHTML='<h2>Run details</h2>'+det(r)+'<button class="c" onclick="showHist()">Back to history</button>'}
 /* ---------- shop, perks, meta ---------- */
 function closeOv(){$('ov').style.display='none'}
 function quitAsk(){save();$('ovc').dataset.m='';$('ovc').dataset.q=1;$('ov').style.display='flex';
-$('ovc').innerHTML='<h2>Leave the game?</h2><p>Your run is saved after every turn, so you can continue it from the main menu next time.</p><button class="c" onclick="location.href=\'../../\'">Back to library</button><button class="c" onclick="quitKeep()">Keep playing</button>'}
+$('ovc').innerHTML='<h2>Leave the game?</h2><p>Your run is saved after every turn, so you can continue it from the main menu next time.</p><button class="c" onclick="location.href='../../'">Back to library</button><button class="c" onclick="quitKeep()">Keep playing</button>'}
 function quitKeep(){$('ovc').dataset.q='';closeOv()}
 function openShop(){$('ovc').dataset.m='';const o=[['Healing Potion',30,()=>inv.h++],['Mana Potion',20,()=>inv.m++],['+1 ATK',80,()=>p.a++],['+1 DFN',80,()=>p.d++]];window.SH=o;
 $('ov').style.display='flex';$('ovc').innerHTML=`<h2>Merchant</h2><p>Gold: ${gold}</p>`+o.map((x,i)=>`<button class="c" ${gold<x[1]?'disabled':''} onclick="buy(${i})">${x[0]} — ${x[1]}g</button>`).join('')+'<button class="c" onclick="closeOv()">Leave</button>'}
@@ -299,7 +322,7 @@ function buy(i){const x=window.SH[i];if(gold<x[1])return;gold-=x[1];x[2]();snd(6
 const PERKS=[['Vitality: +15 max HP',()=>{p.mh+=15;p.hp+=15}],['Power: +2 ATK',()=>p.a+=2],['Armor: +1 DFN',()=>p.d++],['Focus: +6 max MP, +1 MP per hit',()=>{p.mm+=6;p.mp+=6;p.mx=(p.mx||0)+1}],['Skillful: skills deal +25% damage',()=>p.sm+=.25]];
 function perk(){if(!p.pp||over)return;const o=PERKS.slice().sort(()=>Math.random()-.5).slice(0,2);$('ovc').dataset.m='';$('ov').style.display='flex';
 $('ovc').innerHTML=`<h2>Level ${p.lv}! Choose a perk</h2>`+o.map(x=>`<button class="c" onclick="pickPerk(${PERKS.indexOf(x)})">${x[0]}</button>`).join('')}
-function pickPerk(i){PERKS[i][1]();(p.pk=p.pk||[]).push(PERKS[i][0].split(':')[0]);p.pp--;closeOv();say('Perk: '+PERKS[i][0].split(':')[0]+'!','#fc3');hud();perk()}
+function pickPerk(i){PERKS[i][1]();(p.pk=p.pk||[]).push(PERKS[i][0].split(':')[0]);p.pp--;closeOv();say('Perk: '+PERKS[i][0].split(':')[0]+'!', '#fc3');hud();perk()}
 function meta(){try{return{b:0,h:0,p:0,a:0,...JSON.parse(localStorage.getItem('pyrogue_meta')||'{}')}}catch(e){return{b:0,h:0,p:0,a:0}}}
 function saveMeta(M){try{localStorage.setItem('pyrogue_meta',JSON.stringify(M))}catch(e){}}
 function upg(){const M=meta(),U=[['h','Hardy: +10 starting HP',100],['p','Packed lunch: start with a healing potion',150],['a','Whetstone: +1 starting ATK',250]];
@@ -307,9 +330,9 @@ return`<hr><p><b>Bank: ${M.b} gold</b> <small>(every run adds to it)</small></p>
 function up(k,c){const M=meta();if(M.b<c)return;M.b-=c;M[k]++;saveMeta(M);menu()}
 /* ---------- start / menu ---------- */
 function start(cls){const c=CL[cls];p={cls,x:0,y:0,dx:0,dy:0,hp:c.hp,mh:c.hp,mp:c.mp,mm:c.mp,a:c.a,d:c.d,ga:0,gd:0,lv:1,xp:0,xn:100,poi:0,fl:0,cdn:[0,0],pp:0,sm:1};
-depth=1;gold=kills=turns=0;won=over=false;inv={h:0,m:0};wpn=arm=null;logs=[];txts=[];const M=meta();p.mh+=10*M.h;p.hp=p.mh;inv.h=M.p;p.a+=M.a;gen();say(`You enter the dungeon as a ${cls}. Walk into enemies to attack!`,'#9cf');
+depth=1;gold=kills=turns=0;won=over=false;inv={h:0,m:0};wpn=arm=null;logs=[];txts=[];const M=meta();p.mh+=10*M.h;p.hp=p.mh;inv.h=M.p;p.a+=M.a;gen();say(`You enter the dungeon as a ${cls}. Walk into enemies to attack!`, '#9cf');
 $('ov').style.display='none';$('ovc').dataset.m='';hud()}
 function menu(){p=null;$('ov').style.display='flex';$('ovc').dataset.m=1;$('ovc').innerHTML='<h1>Seven Floors Down</h1><p>Descend '+MAXD+' floors and slay the Dungeon Lord. Turn-based: enemies move after you do.</p>'+(hasSave()?'<button class="c" onclick="load()"><b>▶ Continue your run</b></button>':'')+
-Object.entries(CL).map(([n,c],i)=>`<button class="c" onclick="start('${n}')"><b>${i+1}. ${n}</b> · HP ${c.hp} · MP ${c.mp} · ATK ${c.a} · DFN ${c.d}<br><small>${c.t}</small></button>`).join('')+`<button class="c" onclick="daily=!daily;menu()">Daily dungeon (same maps for everyone today): <b>${daily?'ON':'OFF'}</b></button>`+`<button class="c" onclick="diff=(diff+1)%3;menu()">Difficulty: <b>${DMS[diff].n}</b> — tap to change</button>`+`<button class="c" onclick="showHist()">Run history · ${runs().length} saved</button>`+`<button class="c" onclick="showLB()">Leaderboard</button><button class="c" onclick="howTo()">How to play</button>`+upg()+'<button class="c" onclick="location.href=\'../../\'">Back to library</button>'}
+Object.entries(CL).map(([n,c],i)=>`<button class="c" onclick="start('${n}')"><b>${i+1}. ${n}</b> · HP ${c.hp} · MP ${c.mp} · ATK ${c.a} · DFN ${c.d}<br><small>${c.t}</small></button>`).join('')+`<button class="c" onclick="daily=!daily;menu()">Daily dungeon (same maps for everyone today): <b>${daily?'ON':'OFF'}</b></button>`+`<button class="c" onclick="diff=(diff+1)%3;menu()">Difficulty: <b>${DMS[diff].n}</b> — tap to change</button>`+`<button class="c" onclick="showHist()">Run history · ${runs().length} saved</button>`+`<button class="c" onclick="showLB()">Leaderboard</button><button class="c" onclick="howTo()">How to play</button>`+upg()+'<button class="c" onclick="location.href='../../'">Back to library</button>'}
 menu();draw();
 </script></body></html>
