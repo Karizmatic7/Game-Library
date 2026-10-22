@@ -31,6 +31,7 @@ h1,h2{margin:4px 0}small{color:var(--mu)}
 .ch{display:inline-block;padding:2px 9px;border-radius:12px;border:1px solid var(--bd);margin:2px 4px 2px 0;font-size:12px}
 .rw{margin:7px 0;font-size:13px}.rw div{display:flex;justify-content:space-between}.rw i{display:block;height:6px;border-radius:3px;margin-top:3px}
 #qt{background:#ffcc33;color:#1d1a30;font-weight:700;border:0;border-radius:999px;padding:9px 18px;box-shadow:0 2px 8px rgba(0,0,0,.35)}
+.lb{max-height:50vh;overflow:auto;margin:8px 0}.lr{display:flex;align-items:center;gap:10px;padding:7px 8px;border-radius:8px}.lr:nth-child(odd){background:var(--bg)}.lr b{width:28px;text-align:right}.lr span{flex:1;min-width:0}.lr small{display:block;color:var(--mu)}.lr em{font-style:normal;font-weight:700}.lr.me{outline:2px solid #ffcc33}
 </style></head><body>
 <div id="w">
 <div><button id="qt" data-a="quit">‹ Quit to library</button></div>
@@ -232,6 +233,39 @@ function howTo(){$('ovc').dataset.m='';$('ov').style.display='flex';$('ovc').inn
 const hasSave=()=>{try{return!!localStorage.getItem('sfd_save')}catch(e){return false}};
 function save(){if(!p||over||won)return;try{localStorage.setItem('sfd_save',JSON.stringify({map,es,items:[...items],traps:[...traps],st,exp:[...exp],p,depth,gold,kills,turns,inv,wpn,arm,logs,daily,diff}))}catch(e){}}
 function load(){try{const s=JSON.parse(localStorage.getItem('sfd_save'));if(!s)return;({map,es,st,p,depth,gold,kills,turns,inv,wpn,arm,logs,daily,diff}=s);items=new Map(s.items);traps=new Map(s.traps);exp=new Set(s.exp);won=over=false;txts=[];fov();$('ov').style.display='none';$('ovc').dataset.m='';say('Run resumed.','#9cf');hud();perk()}catch(e){}}
+/* ---------- online leaderboard ---------- */
+/* Paste your Firebase Realtime Database address between the quotes (see SETUP-LEADERBOARD.md).
+   Leave it empty to keep scores on this device only. */
+const LB_URL='';
+const lbOn=()=>!!LB_URL,lbApi=()=>LB_URL.replace(/\/$/,'')+'/scores.json';
+const myName=()=>{try{return localStorage.getItem('sfd_name')||''}catch(e){return''}};
+const setName=n=>{try{localStorage.setItem('sfd_name',n)}catch(e){}};
+const synced=()=>{try{return JSON.parse(localStorage.getItem('sfd_synced')||'[]')}catch(e){return[]}};
+function markSynced(t){try{const a=synced();a.push(t);localStorage.setItem('sfd_synced',JSON.stringify(a.slice(-300)))}catch(e){}}
+async function postScore(r,name){if(!lbOn())return false;
+ try{const res=await fetch(lbApi(),{method:'POST',body:JSON.stringify({name:name.slice(0,20),score:r.sc,cls:r.cls,depth:r.depth,lv:r.lv,kills:r.kills,w:r.w?1:0,df:r.df==null?1:r.df,t:r.t})});
+  if(res.ok){markSynced(r.t);return true}}catch(e){}return false}
+/* uploads runs this device saved before the leaderboard existed (each run is only sent once) */
+async function syncOld(){if(!lbOn()||!myName())return 0;let n=0;const done=synced();
+ for(const r of runs().slice().reverse())if(!done.includes(r.t)&&await postScore(r,myName()))n++;return n}
+function askName(cb){$('ovc').dataset.m='';$('ov').style.display='flex';
+ $('ovc').innerHTML='<h2>Pick a leaderboard name</h2><p>This is shown next to your scores. Up to 20 characters.</p><input id="nm" maxlength="20" value="'+esc(myName())+'" style="width:100%;padding:10px;font:inherit;border-radius:8px;border:1px solid var(--bd);background:var(--pn);color:var(--fg)"><button class="c" id="nmok">Save name</button>';
+ $('#nm').focus();$('#nmok').onclick=()=>{const v=$('#nm').value.trim().slice(0,20);if(v){setName(v);cb()}}}
+async function showLB(note){$('ovc').dataset.m='';$('ov').style.display='flex';const back='<button class="c" onclick="menu()">Back</button>';
+ if(!lbOn()){$('ovc').innerHTML='<h2>Leaderboard</h2><p>The online leaderboard is not set up yet. The steps are in SETUP-LEADERBOARD.md.</p>'+back;return}
+ $('ovc').innerHTML='<h2>Leaderboard</h2><p>Loading...</p>';
+ try{const res=await fetch(lbApi()+'?orderBy=%22score%22&limitToLast=50'),d=await res.json()||{},me=myName();
+  const rows=Object.values(d).filter(r=>r&&typeof r.score=='number').sort((a,b)=>b.score-a.score);
+  $('ovc').innerHTML='<h2>Leaderboard</h2>'+(note?'<p><b>'+esc(note)+'</b></p>':'')+'<p><small>Top '+rows.length+' runs from players everywhere.'+(me?' You are playing as <b>'+esc(me)+'</b>.':'')+'</small></p><div class="lb">'+
+   rows.map((r,i)=>'<div class="lr'+(r.name===me?' me':'')+'"><b>'+(i+1)+'</b><span>'+esc(r.name)+'<small>'+esc(r.cls)+', depth '+(+r.depth||0)+', level '+(+r.lv||0)+(r.w?', won':'')+'</small></span><em>'+r.score+'</em></div>').join('')+'</div>'+
+   (rows.length?'':'<p>No scores yet. Be the first!</p>')+'<button class="c" id="chn">'+(me?'Change name':'Set name')+'</button>'+back;
+  $('#chn').onclick=()=>askName(async()=>{await syncOld();showLB()})
+ }catch(e){$('ovc').innerHTML='<h2>Leaderboard</h2><p>Could not load the leaderboard. Check your connection and try again.</p>'+back}}
+function lbSubmit(rec){const s=$('#lbs');if(!s||!lbOn())return;
+ const go=async()=>{s.textContent='Submitting your score...';const ok=await postScore(rec,myName());s.textContent=ok?'Score submitted to the leaderboard!':'Could not reach the leaderboard. Your run is saved on this device.';if(ok)syncOld()};
+ if(myName())go();else{s.innerHTML='<button class="c" id="lbn">Submit to the leaderboard</button>';
+  $('#lbn').onclick=()=>askName(async()=>{const ok=await postScore(rec,myName());await syncOld();showLB(ok?'Score submitted!':'Could not submit your score right now.')})}}
+setTimeout(syncOld,2000);
 /* ---------- run history + score breakdown ---------- */
 const esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
 function runs(){try{return JSON.parse(localStorage.getItem('pyrogue_runs')||'[]')}catch(e){return[]}}
@@ -250,7 +284,7 @@ if(diff!=1){const sub=B.reduce((s,b)=>s+b[1],0);B.push([DMS[diff].n+' mode ('+(d
 const sc=B.reduce((s,b)=>s+b[1],0);let best=0;try{best=+localStorage.getItem('pyrogue_best')||0;if(sc>best)localStorage.setItem('pyrogue_best',sc)}catch(e){}
 const rec={t:Date.now(),cls:p.cls,w:w?1:0,sc,depth,lv:p.lv,kills,gold,turns,mh:p.mh,mm:p.mm,a:ta(),d:td(),wp:wpn?wpn.n+' +'+wpn.b:'none',ar:arm?arm.n+' +'+arm.b:'none',pk:p.pk||[],bk:B,kb:w?'':(p.kb||'unknown causes'),dy:daily?1:0,df:diff,bank:gold+depth*10};
 const rl=runs();rl.unshift(rec);try{localStorage.setItem('pyrogue_runs',JSON.stringify(rl.slice(0,40)))}catch(e){}
-setTimeout(()=>{$('ovc').dataset.m='';$('ov').style.display='flex';$('ovc').innerHTML=``+det(rec)+(sc>best?'<p style="text-align:center;color:#e8b923"><b>★ New high score! ★</b></p>':`<p><small>Best score: ${best}</small></p>`)+'<button class="c" onclick="menu()">Play again</button><button class="c" onclick="showHist()">Run history</button><button class="c" onclick="location.href=\'../../\'">Back to library</button>'},700)}
+setTimeout(()=>{$('ovc').dataset.m='';$('ov').style.display='flex';$('ovc').innerHTML=``+det(rec)+(sc>best?'<p style="text-align:center;color:#e8b923"><b>★ New high score! ★</b></p>':`<p><small>Best score: ${best}</small></p>`)+'<p id="lbs"></p><button class="c" onclick="menu()">Play again</button><button class="c" onclick="showHist()">Run history</button><button class="c" onclick="showLB()">Leaderboard</button><button class="c" onclick="location.href=\'../../\'">Back to library</button>';lbSubmit(rec)},700)}
 function showHist(){$('ovc').dataset.m='';$('ov').style.display='flex';const rl=runs(),best=Math.max(0,...rl.map(r=>r.sc));
 $('ovc').innerHTML='<h2>Run history</h2>'+(rl.length?`<p><small>${rl.length} runs · ${rl.filter(r=>r.w).length} wins · best score ${best}</small></p>`+rl.map((r,i)=>`<button class="c" onclick="showRun(${i})"><b>${r.sc}</b> · ${r.cls} · depth ${r.depth} · Lv ${r.lv} · ${r.w?'<span style="color:#4c4">Victory</span>':'died'}<br><small>${new Date(r.t).toLocaleDateString()}${r.dy?' · daily':''}</small></button>`).join(''):'<p>No runs recorded yet. Finish a run and it will show up here (runs from before this update weren’t saved).</p>')+'<button class="c" onclick="menu()">Back</button>'}
 function showRun(i){const r=runs()[i];if(!r)return showHist();$('ovc').innerHTML='<h2>Run details</h2>'+det(r)+'<button class="c" onclick="showHist()">Back to history</button>'}
@@ -276,6 +310,6 @@ function start(cls){const c=CL[cls];p={cls,x:0,y:0,dx:0,dy:0,hp:c.hp,mh:c.hp,mp:
 depth=1;gold=kills=turns=0;won=over=false;inv={h:0,m:0};wpn=arm=null;logs=[];txts=[];const M=meta();p.mh+=10*M.h;p.hp=p.mh;inv.h=M.p;p.a+=M.a;gen();say(`You enter the dungeon as a ${cls}. Walk into enemies to attack!`,'#9cf');
 $('ov').style.display='none';$('ovc').dataset.m='';hud()}
 function menu(){p=null;$('ov').style.display='flex';$('ovc').dataset.m=1;$('ovc').innerHTML='<h1>Seven Floors Down</h1><p>Descend '+MAXD+' floors and slay the Dungeon Lord. Turn-based: enemies move after you do.</p>'+(hasSave()?'<button class="c" onclick="load()"><b>▶ Continue your run</b></button>':'')+
-Object.entries(CL).map(([n,c],i)=>`<button class="c" onclick="start('${n}')"><b>${i+1}. ${n}</b> · HP ${c.hp} · MP ${c.mp} · ATK ${c.a} · DFN ${c.d}<br><small>${c.t}</small></button>`).join('')+`<button class="c" onclick="daily=!daily;menu()">Daily dungeon (same maps for everyone today): <b>${daily?'ON':'OFF'}</b></button>`+`<button class="c" onclick="diff=(diff+1)%3;menu()">Difficulty: <b>${DMS[diff].n}</b> — tap to change</button>`+`<button class="c" onclick="showHist()">Run history · ${runs().length} saved</button>`+`<button class="c" onclick="howTo()">How to play</button>`+upg()+'<button class="c" onclick="location.href=\'../../\'">Back to library</button>'}
+Object.entries(CL).map(([n,c],i)=>`<button class="c" onclick="start('${n}')"><b>${i+1}. ${n}</b> · HP ${c.hp} · MP ${c.mp} · ATK ${c.a} · DFN ${c.d}<br><small>${c.t}</small></button>`).join('')+`<button class="c" onclick="daily=!daily;menu()">Daily dungeon (same maps for everyone today): <b>${daily?'ON':'OFF'}</b></button>`+`<button class="c" onclick="diff=(diff+1)%3;menu()">Difficulty: <b>${DMS[diff].n}</b> — tap to change</button>`+`<button class="c" onclick="showHist()">Run history · ${runs().length} saved</button>`+`<button class="c" onclick="showLB()">Leaderboard</button><button class="c" onclick="howTo()">How to play</button>`+upg()+'<button class="c" onclick="location.href=\'../../\'">Back to library</button>'}
 menu();draw();
 </script></body></html>
