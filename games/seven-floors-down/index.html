@@ -236,7 +236,7 @@ function load(){try{const s=JSON.parse(localStorage.getItem('sfd_save'));if(!s)r
 /* ---------- online leaderboard ---------- */
 /* Paste your Firebase Realtime Database address between the quotes (see SETUP-LEADERBOARD.md).
    Leave it empty to keep scores on this device only. */
-const LB_URL='';
+const LB_URL='https://console.firebase.google.com/u/0/project/seven-floors-down-1f220/database/seven-floors-down-1f220-default-rtdb/data/~2F';
 const lbOn=()=>!!LB_URL,lbApi=()=>LB_URL.replace(/\/$/,'')+'/scores.json';
 const myName=()=>{try{return localStorage.getItem('sfd_name')||''}catch(e){return''}};
 const setName=n=>{try{localStorage.setItem('sfd_name',n)}catch(e){}};
